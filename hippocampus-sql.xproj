@@ -16,10 +16,15 @@
   </PropertyGroup>
   <ItemGroup>
     <DnxInvisibleFolder Include=".git\" />
+    <DnxInvisibleFolder Include=".idea\" />
     <DnxInvisibleFolder Include=".vs\" />
+    <DnxInvisibleFolder Include="packages\" />
   </ItemGroup>
   <ItemGroup>
     <DnxInvisibleContent Include="project.lock.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>
