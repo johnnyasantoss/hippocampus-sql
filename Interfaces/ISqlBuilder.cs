@@ -1,4 +1,7 @@
-﻿namespace HippocampusSql.Interfaces
+﻿using System;
+using System.Linq.Expressions;
+
+namespace HippocampusSql.Interfaces
 {
     /// <summary>
     /// SQL builder of a class
@@ -10,5 +13,9 @@
         /// Stores info from class
         /// </summary>
         IClassMetadataCache ClassCache { get; }
+
+        ISqlBuilder<T> Where(Expression<Func<T, bool>> predicate);
+
+        string Materialize();
     }
 }

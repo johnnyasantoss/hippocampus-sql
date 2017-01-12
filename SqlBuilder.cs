@@ -23,11 +23,17 @@ namespace HippocampusSql
         /// </summary>
         public IClassMetadataCache ClassCache { get; private set; }
 
+        private ISqlQuery _query { get; }
+
         /// <summary>
         /// Create a new <see cref="SqlBuilder{T}"/>
         /// </summary>
-        public SqlBuilder()
+        public SqlBuilder(QueryType queryType)
         {
+            _query = new SqlQuery(queryType);
+            var tableInfo = typeof(T);
+            _query.TableInfo = new TableInfo(tableInfo.Name, tableInfo.Name);
+
             InitializeCache();
         }
 
@@ -51,97 +57,100 @@ namespace HippocampusSql
             ClassCache = cache;
         }
 
-        public string GetAllWhere(Expression<Func<T, bool>> predicate)
+        public ISqlBuilder<T> Where(Expression<Func<T, bool>> predicate)
         {
-            var query = new SqlQuery(QueryType.Select);
+            ResolveExpression(predicate);
 
-            ResolveLambdaExpression(predicate, query);
-
-            return query.ToSqlString();
+            return this;
         }
 
-        private void ResolveLambdaExpression(Expression exp, ISqlQuery query = null)
+        private void ResolveExpression(Expression exp)
         {
+            if (exp == null)
+                throw new ArgumentNullException(nameof(exp), "An expression should be provided.");
+
             Debug.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
 
             if (exp is LambdaExpression)
             {
                 var lamdaExp = ((LambdaExpression)exp);
 
-                if (query.TableInfo == null)
-                {
-                    var tableInfo = lamdaExp.Parameters[0];
-                    query.TableInfo = new TableInfo(tableInfo.Type.Name, tableInfo.Name);
-                }
+                _query.TableInfo.Abrv = lamdaExp.Parameters[0].Name;
 
-                ResolveLambdaExpression(lamdaExp.Body, query);
+                ResolveExpression(lamdaExp.Body);
             }
             else if (exp is BinaryExpression)
             {
-                ResolveBinaryExpression((BinaryExpression)exp, query);
+                ResolveBinaryExpression((BinaryExpression)exp);
             }
             else if (exp is MemberExpression)
             {
-                ResolveMemberExpression((MemberExpression)exp, query);
+                ResolveMemberExpression((MemberExpression)exp);
             }
             else if (exp is UnaryExpression)
             {
-                ResolveLambdaExpression(((UnaryExpression)exp).Operand, query);
+                ResolveExpression(((UnaryExpression)exp).Operand);
             }
             else if (exp is ConstantExpression)
             {
                 var constExp = (ConstantExpression)exp;
-                var paramKey = query.GenerateNewParameter(constExp.Value);
-                query.Where.Append(paramKey);
+                var paramKey = _query.GenerateNewParameter(constExp.Value);
+                _query.Where.Append(paramKey);
             }
             else if (exp is ParameterExpression)
             {
-                query.Where.Append(((ParameterExpression)exp).Name);
+                _query.Where.Append(((ParameterExpression)exp).Name);
             }
             else
                 throw new NotImplementedException("Expression not implemented.");
         }
 
-        private void ResolveBinaryExpression(BinaryExpression exp, ISqlQuery query)
+        private void ResolveBinaryExpression(BinaryExpression exp)
         {
-            ResolveLambdaExpression(exp.Left, query);
+            ResolveExpression(exp.Left);
 
             switch (exp.NodeType)
             {
                 case ExpressionType.AndAlso:
-                    query.Where
+                    _query.Where
                         .AppendLine()
                         .Append(" AND ");
                     break;
                 case ExpressionType.OrElse:
-                    query.Where
+                    _query.Where
                         .AppendLine()
                         .Append(" OR ");
                     break;
                 case ExpressionType.Equal:
-                    query.Where.Append(" = ");
+                    _query.Where.Append(" = ");
                     break;
                 case ExpressionType.NotEqual:
-                    query.Where.Append(" <> ");
+                    _query.Where.Append(" <> ");
                     break;
                 default:
                     throw new NotSupportedException($"The expression type \"{exp.NodeType}\" not supported yet.");
             }
 
-            ResolveLambdaExpression(exp.Right, query);
+            ResolveExpression(exp.Right);
         }
 
-        private void ResolveMemberExpression(MemberExpression exp, ISqlQuery query)
+        private void ResolveMemberExpression(MemberExpression exp)
         {
             if (ClassCache.Columns.Contains(exp.Member.Name))
             {
-                ResolveLambdaExpression(exp.Expression, query);
-                query.Where
+                ResolveExpression(exp.Expression);
+                _query.Where
                     .Append('.')
                     .Append(exp.Member.Name);
             }
             else
                 throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
         }
+
+        public string Materialize() => _query.ToSqlString();
+
+        [Obsolete]
+        public override string ToString()
+            => Materialize();
     }
 }
