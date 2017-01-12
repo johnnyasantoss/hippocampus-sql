@@ -1,0 +1,36 @@
+{
+  "title": "HippocampusSQL",
+  "copyright": "Johnny Santos - 2017",
+  "description": "HippocampusSQL is a package that helps you to create SQL queries.",
+  "version": "0.0.1-*",
+  "buildOptions": {
+    "debugType": "portable",
+    "xmlDoc": true
+  },
+  "dependencies": {},
+  "frameworks": {
+    "netcoreapp1.1": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "version": "1.1.0",
+          "type": "platform"
+        }
+      }
+    },
+    "net45": {
+      "dependencies": {
+        "System.Runtime": "4.0.0"
+      }
+    },
+    "net462": {
+      "dependencies": {
+        "System.Runtime": "4.3.0"
+      }
+    },
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.1"
+      }
+    }
+  }
+}
