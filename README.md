@@ -1,2 +1,2 @@
 # hippocampus-sql
-HippocampusSQL is a package that helps you to create SQL querys. Mostly to use with Dapper.
+HippocampusSQL is a package that helps you to create SQL queries. Mostly to use with Dapper.
