@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HippocampusSql
+namespace HippocampusSql.Services
 {
     internal class SqlQuery : ISqlQuery
     {
@@ -13,9 +13,13 @@ namespace HippocampusSql
 
         public QueryType Type { get; }
 
+        public TableInfo TableInfo { get; set; }
+
         public StringBuilder Where { get; } = new StringBuilder();
 
-        public TableInfo TableInfo { get; set; }
+        public int WhereDefinitions { get; set; }
+
+        public StringBuilder Select { get; } = new StringBuilder();
 
         public SqlQuery(QueryType type)
         {
@@ -55,6 +59,30 @@ namespace HippocampusSql
                     .AppendLine();
 
             return sb.ToString();
+        }
+
+        public StringBuilder AppendInto(AppendType type, Func<StringBuilder, StringBuilder> appender)
+        {
+            StringBuilder sb;
+
+            switch (type)
+            {
+                case AppendType.Select:
+                    sb = Select;
+                    break;
+                case AppendType.Where:
+                    sb = Where;
+                    break;
+                default:
+                    throw new NotImplementedException($"Append type not implemented: {type}");
+            }
+
+            return appender(sb);
+        }
+
+        public IWhereDefinition BeginWhere()
+        {
+            return new WhereDefinition(this);
         }
     }
 }

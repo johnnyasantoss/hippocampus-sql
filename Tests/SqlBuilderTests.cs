@@ -1,4 +1,5 @@
 ﻿using HippocampusSql.Enums;
+using HippocampusSql.Services;
 using Xunit;
 
 namespace HippocampusSql.Tests
@@ -22,7 +23,7 @@ namespace HippocampusSql.Tests
             Assert.NotNull(where);
             Assert.NotEmpty(where);
             Assert.Equal(@"SELECT * FROM TestClass AS t 
-WHERE t.Id = @p1
+WHERE (t.Id = @p1)
 ", where, true, true, true);
         }
 
@@ -40,8 +41,30 @@ WHERE t.Id = @p1
             Assert.NotNull(where);
             Assert.NotEmpty(where);
             Assert.Equal(@"SELECT * FROM TestClass AS t 
-WHERE t.Id = @p1
- AND t.Name <> @p2
+WHERE (t.Id = @p1
+ AND t.Name <> null)
+", where, true, true, true);
+        }
+
+        /// <summary>
+        /// Checks if <see cref="SqlBuilder{T}.Where(System.Linq.Expressions.Expression{System.Func{T, bool}})"/>
+        /// can generate a simple query with 2 fluent where expressions
+        /// </summary>
+        [Fact]
+        public void CanGenerateWhereWithFluentConcatenation()
+        {
+            var sqlBuilder = new SqlBuilder<TestClass>(QueryType.Select);
+
+            var where = sqlBuilder
+                .Where(t => t.Id == 0)
+                .Where(t => t.Name != null)
+                .Materialize();
+
+            Assert.NotNull(where);
+            Assert.NotEmpty(where);
+            Assert.Equal(@"SELECT * FROM TestClass AS t 
+WHERE (t.Id = @p1)
+ AND (t.Name <> null)
 ", where, true, true, true);
         }
     }
