@@ -44,12 +44,15 @@ Param(
     [string]$Target = "Default",
     [ValidateSet("Release", "Debug")]
     [string]$Configuration = "Release",
+    [ValidateSet("homologacao", "Debug", "Release")]
+    [string]$BuildConfiguration = "Release",
     [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
-    [string]$Verbosity = "Verbose",
+    [string]$Verbosity = "Normal",
     [switch]$Experimental,
     [Alias("DryRun","Noop")]
     [switch]$WhatIf,
     [switch]$Mono,
+    [switch]$DebugCake,
     [switch]$SkipToolPackageRestore,
     [Parameter(Position=0,Mandatory=$false,ValueFromRemainingArguments=$true)]
     [string[]]$ScriptArgs
@@ -80,8 +83,6 @@ function MD5HashFile([string] $filePath)
     }
 }
 
-Write-Host "Preparing to run build script..."
-
 if(!$PSScriptRoot){
     $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 }
@@ -111,6 +112,12 @@ if($Experimental.IsPresent -and !($Mono.IsPresent)) {
 $UseDryRun = "";
 if($WhatIf.IsPresent) {
     $UseDryRun = "-dryrun"
+}
+
+# Is this a dry run?
+$IsInDebug = "";
+if($DebugCake.IsPresent) {
+    $IsInDebug = "-debug"
 }
 
 # Make sure tools folder exists
@@ -184,6 +191,6 @@ if (!(Test-Path $CAKE_EXE)) {
 }
 
 # Start Cake
-Write-Host "Running build script..."
-Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $ScriptArgs"
+Write-Host "Additional params: $ScriptArgs"
+Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" -buildconfiguration=`"$BuildConfiguration`" $UseMono $UseDryRun $UseExperimental $IsInDebug $ScriptArgs"
 exit $LASTEXITCODE
