@@ -3,7 +3,6 @@
 #tool Cake.Coveralls
 #tool "nuget:?package=OpenCover"
 
-using System.Diagnostics
 using System;
 
 var target = Argument("target", "");
@@ -69,14 +68,18 @@ Task("UploadCoverageReport")
 	.IsDependentOn("GenerateCoverageReport")
     .Does(() =>
 {
-	//if(string.IsNullOrEmpty(coverallsToken))
-	//	throw new ArgumentNullException("coverallsToken");
-	//#break
+	if(string.IsNullOrEmpty(coverallsToken))
+	{
+		throw new ArgumentNullException("coverallsToken");
+	}
+
+	Information("======= UPLOADING COVERAGE DATA ========");
     CoverallsIo(new FilePath(coverageFile),
 	new CoverallsIoSettings()
     {
-        RepoToken = "" //implementar
+        RepoToken = coverallsToken
     });
+	Information("=============== FINISHED ===============");
 })
 .OnError(ex => {
 	Information("================ ERROR =================");
