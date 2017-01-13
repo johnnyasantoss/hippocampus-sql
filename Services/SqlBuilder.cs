@@ -2,13 +2,10 @@
 using HippocampusSql.Interfaces;
 using HippocampusSql.Model;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace HippocampusSql.Services
 {
@@ -19,43 +16,25 @@ namespace HippocampusSql.Services
     public class SqlBuilder<T> : ISqlBuilder<T>
         where T : class
     {
-        internal IClassMetadataCache ClassCache { get; private set; }
-
         private ISqlQuery _query { get; }
 
-        public bool Beautify { get; set; } = true;
+        /// <summary>
+        /// Defines if query should have line-breaks
+        /// </summary>
+        public bool Beautify { get; set; }
 
         /// <summary>
         /// Create a new <see cref="SqlBuilder{T}"/>
         /// </summary>
-        public SqlBuilder(QueryType queryType)
+        public SqlBuilder(bool beautify = true)
         {
-            _query = new SqlQuery(queryType);
-            var tableInfo = typeof(T);
-            _query.TableInfo = new TableInfo(tableInfo.Name, tableInfo.Name);
-
-            InitializeCache();
+            Beautify = beautify;
+            _query = new SqlQuery(
+                new ClassMetadataCache(typeof(T))
+                , Beautify
+                );
         }
 
-        private void InitializeCache()
-        {
-            var props = typeof(T).GetProperties();
-            var cache = new ClassMetadataCache();
-
-            foreach (var prop in props)
-            {
-                var isKey = prop.GetCustomAttribute(typeof(KeyAttribute)) != null;
-                var columnInfo = (ColumnAttribute)prop.GetCustomAttribute(typeof(ColumnAttribute));
-
-                var name = columnInfo?.Name ?? prop.Name;
-
-                if (isKey)
-                    cache.Keys.Add(name);
-                cache.Columns.Add(name);
-            }
-
-            ClassCache = cache;
-        }
 
         #region Expression resolvers
         private void ResolveExpression(Expression exp, AppendType appendType)
@@ -68,8 +47,6 @@ namespace HippocampusSql.Services
             if (exp is LambdaExpression)
             {
                 var lamdaExp = ((LambdaExpression)exp);
-
-                _query.TableInfo.Abrv = lamdaExp.Parameters[0].Name;
 
                 ResolveExpression(lamdaExp.Body, appendType);
             }
@@ -88,9 +65,14 @@ namespace HippocampusSql.Services
             else if (exp is ConstantExpression)
             {
                 var constExp = (ConstantExpression)exp;
-                var paramKey = constExp.Value == null
-                    ? "null"
-                    : _query.GenerateNewParameter(constExp.Value);
+                string paramKey;
+
+                if (constExp.Value == null)
+                    paramKey = "null";
+                else if (constExp.Value is char && ((char)constExp.Value) == '*')
+                    paramKey = "*";
+                else
+                    paramKey = _query.GenerateNewParameter(constExp.Value);
 
                 _query.AppendInto(appendType, s => s.Append(paramKey));
             }
@@ -98,8 +80,25 @@ namespace HippocampusSql.Services
             {
                 _query.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
             }
+            else if (exp is NewArrayExpression)
+            {
+                ResolveNewArrayExpression(exp as NewArrayExpression, appendType);
+            }
             else
                 throw new NotImplementedException("Expression not implemented.");
+        }
+
+        private void ResolveNewArrayExpression(NewArrayExpression exp, AppendType appendType)
+        {
+            switch (appendType)
+            {
+                case AppendType.Select:
+                    foreach (var e in exp.Expressions)
+                        ResolveExpression(e, appendType);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private void ResolveBinaryExpression(BinaryExpression exp, AppendType appendType)
@@ -139,12 +138,16 @@ namespace HippocampusSql.Services
 
         private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
         {
-            if (ClassCache.Columns.Contains(exp.Member.Name))
+            var cache = _query.ClassCache;
+            if (cache.Columns.Contains(exp.Member.Name))
             {
-                ResolveExpression(exp.Expression, appendType);
-                _query.AppendInto(appendType,
-                    s => s.Append('.').Append(exp.Member.Name)
-                    );
+                if (!string.IsNullOrWhiteSpace(cache.TableInfo.Abbreviation))
+                {
+                    ResolveExpression(exp.Expression, appendType);
+                    _query.AppendInto(appendType, s => s.Append('.'));
+                }
+
+                _query.AppendInto(appendType, s => s.Append(exp.Member.Name));
             }
             else
                 throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
@@ -152,22 +155,61 @@ namespace HippocampusSql.Services
         #endregion
 
         #region ISqlBuilde implementation
-
-        public ISqlBuilder<T> Select(Expression<Func<T, object[]>> selector)
+        /// <summary>
+        /// Generates a select query
+        /// </summary>
+        /// <param name="selector">Expression to return a object array of the columns(props) that you want to select</param>
+        /// <param name="info">Information of the table that will be selected</param>
+        /// <returns>This builder</returns>
+        public ISqlBuilder<T> Select(Expression<Func<T, object[]>> selector, TableInformation? info = null)
         {
-            throw new NotImplementedException();
+            using (_query.BeginSelect())
+                ResolveExpression(selector, AppendType.Select);
+
+            return this;
         }
 
+        /// <summary>
+        /// Generates a select query
+        /// </summary>
+        /// <param name="info">Information of the table that will be selected</param>
+        /// <returns>This builder</returns>
+        public ISqlBuilder<T> Select(TableInformation? info = null)
+        {
+            using (_query.BeginSelect())
+            {
+                Expression<Func<char>> exp = () => '*';
+                ResolveExpression(exp, AppendType.Select);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Generates a insert query
+        /// </summary>
+        /// <param name="entity">Entity to be inserted</param>
+        /// <returns>This builder</returns>
         public ISqlBuilder<T> Insert(T entity)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Generates a update query
+        /// </summary>
+        /// <param name="entity">Entity to be updated</param>
+        /// <returns>This builder</returns>
         public ISqlBuilder<T> Update(T entity)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Generates a delete query
+        /// </summary>
+        /// <param name="entity">Entity to be deleted</param>
+        /// <returns>This builder</returns>
         public ISqlBuilder<T> Delete(T entity)
         {
             throw new NotImplementedException();

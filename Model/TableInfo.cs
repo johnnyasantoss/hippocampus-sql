@@ -1,14 +1,36 @@
 ﻿namespace HippocampusSql.Model
 {
-    internal class TableInfo
+    /// <summary>
+    /// Table information
+    /// </summary>
+    public struct TableInformation
     {
-        internal string Name { get; set; }
-        internal string Abrv { get; set; }
+        /// <summary>
+        /// Table name
+        /// </summary>
+        public string Name { get; set; }
 
-        public TableInfo(string name, string abrv)
+        /// <summary>
+        /// Abbreviation in sql query (must be unique)
+        /// </summary>
+        public string Abbreviation { get; set; }
+
+        /// <summary>
+        /// Schema of the table
+        /// </summary>
+        public string Schema { get; set; }
+
+        /// <summary>
+        /// Information of the table
+        /// </summary>
+        /// <param name="name">Table name</param>
+        /// <param name="schema">Schema of the table</param>
+        /// <param name="abbreviation">Abbreviation in sql query (must be unique)</param>
+        public TableInformation(string name, string schema = null, string abbreviation = null)
         {
+            Abbreviation = abbreviation;
             Name = name;
-            Abrv = abrv;
+            Schema = schema;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HippocampusSql.Model;
+using System;
 using System.Linq.Expressions;
 
 namespace HippocampusSql.Interfaces
@@ -17,9 +18,17 @@ namespace HippocampusSql.Interfaces
         /// <summary>
         /// Generates a select query
         /// </summary>
-        /// <param name="selector">Expression to return a object array of the columns(props) that you want to select</param>
+        /// <param name="info">Information of the table that will be selected</param>
         /// <returns>This builder</returns>
-        ISqlBuilder<T> Select(Expression<Func<T, object[]>> selector);
+        ISqlBuilder<T> Select(TableInformation? info = null);
+
+        /// <summary>
+        /// Generates a select query
+        /// </summary>
+        /// <param name="selector">Expression to return a object array of the columns(props) that you want to select</param>
+        /// <param name="info">Information of the table that will be selected</param>
+        /// <returns>This builder</returns>
+        ISqlBuilder<T> Select(Expression<Func<T, object[]>> selector, TableInformation? info = null);
 
         /// <summary>
         /// Generates a insert query

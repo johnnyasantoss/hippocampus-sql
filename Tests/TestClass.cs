@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HippocampusSql.Tests
 {
+    [Table("TEST", Schema = "dbo")]
     internal class TestClass
     {
         [Key, Column]

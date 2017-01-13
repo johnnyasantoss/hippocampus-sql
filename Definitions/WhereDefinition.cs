@@ -1,8 +1,7 @@
 ﻿using HippocampusSql.Enums;
 using HippocampusSql.Interfaces;
-using System;
 
-namespace HippocampusSql
+namespace HippocampusSql.Definitions
 {
     internal class WhereDefinition : IWhereDefinition
     {
@@ -19,7 +18,7 @@ namespace HippocampusSql
                           .Append(" AND (")
                           );
             else
-                Query.AppendInto(AppendType.Where, s => s.Append('('));
+                Query.AppendInto(AppendType.Where, s => s.Append("WHERE ("));
         }
 
         public void Dispose()
