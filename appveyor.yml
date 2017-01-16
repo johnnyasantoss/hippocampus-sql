@@ -1,0 +1,25 @@
+version: 1.0.{build}
+environment:
+  COVERALLS_TOKEN:
+    secure: O7K9pkGJilFgLzsnFxE1kPo8/dpUHjz5WYI2cUuonl4IV+w6GjtLmiBY/BJp6LPorHyBPVcM5HngD+wrp30AswwDCi+AEcydirSpRq5tJhM=
+cache:
+- /packages
+- /tools
+build_script:
+- ps: .\build.ps1 -Target="Build" -coverallsToken=$ENV:COVERALLS_TOKEN
+artifacts:
+- path: '*'
+  name: build.zip
+deploy:
+- provider: NuGet
+  api_key:
+    secure: Ji1yD7O5TWE6Pb9me7AJmF3FD03dKRckdjRWu/B131AebmdDQclB+D5uVkj1HH52
+  on:
+    branch: master
+notifications:
+- provider: Slack
+  incoming_webhook: https://hooks.slack.com/services/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
+  channel: '@johnny-santos'
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: false
