@@ -19,7 +19,7 @@ artifacts:
   name: build-pdb
 deploy_script:
 - ps: >-
-	cd src
+    cd src
 
     dotnet pack
 
