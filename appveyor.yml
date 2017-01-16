@@ -19,9 +19,11 @@ artifacts:
   name: build-pdb
 deploy_script:
 - ps: >-
+	cd src
+
     dotnet pack
 
-    cd src/bin/Debug
+    cd bin/Debug
 
     Write-Host "Uploading to NUGET package: Hippocampus.SQL.$ENV:APPVEYOR_BUILD_VERSION.nupkg"
 
