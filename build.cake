@@ -1,6 +1,6 @@
 #addin Cake.Coveralls
 
-#tool Cake.Coveralls
+#tool "nuget:?package=coveralls.io"
 #tool "nuget:?package=OpenCover"
 
 using System;
