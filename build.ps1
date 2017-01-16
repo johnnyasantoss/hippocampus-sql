@@ -191,6 +191,5 @@ if (!(Test-Path $CAKE_EXE)) {
 }
 
 # Start Cake
-Write-Host "Additional params: $ScriptArgs"
 Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" -buildconfiguration=`"$BuildConfiguration`" $UseMono $UseDryRun $UseExperimental $IsInDebug $ScriptArgs"
 exit $LASTEXITCODE
