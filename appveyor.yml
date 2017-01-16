@@ -11,11 +11,11 @@ build_script:
 test_script:
 - ps: .\build.ps1 -Target "UploadCoverageReport" -coverallsToken="$ENV:COVERALLS_TOKEN"
 artifacts:
-- path: bin/**/hippocampus-sql.dll
+- path: src/bin/**/Hippocampus.SQL.dll
   name: build-dll
-- path: bin/**/hippocampus-sql.xml
+- path: src/bin/**/Hippocampus.SQL.xml
   name: build-xml
-- path: bin/**/hippocampus-sql.pdb
+- path: src/bin/**/Hippocampus.SQL.pdb
   name: build-pdb
 deploy_script:
 - ps: >-
@@ -23,9 +23,9 @@ deploy_script:
 
     cd bin/Debug
 
-    Write-Host "Uploading to NUGET package: hippocampus-sql.$ENV:APPVEYOR_BUILD_VERSION.nupkg"
+    Write-Host "Uploading to NUGET package: Hippocampus.SQL.$ENV:APPVEYOR_BUILD_VERSION.nupkg"
 
-    nuget push "hippocampus-sql.$ENV:APPVEYOR_BUILD_VERSION.nupkg" "$ENV:NUGET_TOKEN"
+    nuget push "Hippocampus.SQL.$ENV:APPVEYOR_BUILD_VERSION.nupkg" "$ENV:NUGET_TOKEN"
 notifications:
 - provider: Slack
   incoming_webhook: https://hooks.slack.com/services/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

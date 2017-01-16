@@ -8,9 +8,7 @@
   "buildOptions": {
     "outputName": "Hippocampus.SQL",
     "debugType": "full",
-    "xmlDoc": true,
-    "optimize": false,
-    "define": []
+    "xmlDoc": true
   },
 
   "dependencies": {
