@@ -3,7 +3,6 @@
 
 #tool "nuget:?package=coveralls.io"
 #tool "nuget:?package=OpenCover"
-#tool "nuget:?package=Newtonsoft.Json"
 
 using System;
 
@@ -13,6 +12,7 @@ var buildConfig = Argument("buildconfiguration", "Debug");
 var buildPath = "./src/bin";
 var coverageFile = "./src/coverage-result.xml";
 var srcProjectFile = File("./src/project.json");
+var testsProjectFile = File("./tests/project.json");
 
 Task("SetVersion")
  .Does(() => 
@@ -35,6 +35,7 @@ Task("Build")
 		OutputDirectory = "./artifacts/"
 	};
 	DotNetCoreBuild(srcProjectFile);
+	DotNetCoreBuild(testsProjectFile);
 	Information("========================================");
 })
 .OnError(ex => {
@@ -107,10 +108,11 @@ Task("GenerateCoverageReport")
 	.IsDependentOn("Build")
 	.Does(() => 
 {
-	OpenCover(tool => tool.DotNetCoreTest(),
+	OpenCover(tool => tool.DotNetCoreTest(testsProjectFile),
 	  new FilePath(coverageFile),
 	  new OpenCoverSettings()
-		.WithFilter("+[Hippocampus.SQL.Tests]*"));
+		.WithFilter("+[Hippocampus.SQL.Tests]*")
+		.WithFilter("+[Hippocampus.SQL]*"));
 });
 
 if(!string.IsNullOrEmpty(target))
