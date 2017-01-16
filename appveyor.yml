@@ -1,7 +1,7 @@
 version: 1.0.{build}
 environment:
   COVERALLS_TOKEN:
-    secure: O7K9pkGJilFgLzsnFxE1kPo8/dpUHjz5WYI2cUuonl4IV+w6GjtLmiBY/BJp6LPorHyBPVcM5HngD+wrp30AswwDCi+AEcydirSpRq5tJhM=
+    secure: 51s8ulHCbos7AITtIf/y5wep2T2+wTHgOapg4/DT3EHIH/AH3mqnSqVZbKCWQYjN
 cache:
 - /packages
 - /tools
