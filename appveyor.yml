@@ -1,10 +1,11 @@
-version: 1.0.{build}
+version: 0.0.1.{build}
+pull_requests:
+  do_not_increment_build_number: true
 environment:
   COVERALLS_TOKEN:
     secure: 51s8ulHCbos7AITtIf/y5wep2T2+wTHgOapg4/DT3EHIH/AH3mqnSqVZbKCWQYjN
-cache:
-- /packages
-- /tools
+  NUGET_TOKEN:
+    secure: Ji1yD7O5TWE6Pb9me7AJmF3FD03dKRckdjRWu/B131AebmdDQclB+D5uVkj1HH52
 build_script:
 - ps: .\build.ps1 -Target "Build"
 test_script:
@@ -16,12 +17,15 @@ artifacts:
   name: build-xml
 - path: bin/**/hippocampus-sql.pdb
   name: build-pdb
-deploy:
-- provider: NuGet
-  api_key:
-    secure: Ji1yD7O5TWE6Pb9me7AJmF3FD03dKRckdjRWu/B131AebmdDQclB+D5uVkj1HH52
-  on:
-    branch: master
+deploy_script:
+- ps: >-
+    dotnet pack
+
+    cd bin/Debug
+
+    Write-Host "Uploading to NUGET package: hippocampus-sql.$ENV:APPVEYOR_BUILD_VERSION.nupkg"
+
+    nuget push "hippocampus-sql.$ENV:APPVEYOR_BUILD_VERSION.nupkg" "$ENV:NUGET_TOKEN"
 notifications:
 - provider: Slack
   incoming_webhook: https://hooks.slack.com/services/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
