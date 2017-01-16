@@ -1,0 +1,34 @@
+﻿{
+  "title": "Hippocampus SQL Tests",
+  "copyright": "Johnny Santos - 2017",
+
+  "authors": [
+    "Johnny Santos <johnnyadsantos@gmail.com>"
+  ],
+
+  "buildOptions": {
+    "outputName": "Hippocampus.SQL.Tests",
+    "debugType": "full"
+  },
+
+  "version": "1.0.0-0",
+
+  "dependencies": {
+    "dotnet-test-xunit": "1.0.0-rc2-build10025",
+    "hippocampus-sql": "0.0.1",
+    "System.ComponentModel.Annotations": "4.3.0",
+    "xunit": "2.1.0",
+    "System.Runtime": {
+      "version": "4.3.0",
+      "type": "platform"
+    }
+  },
+
+  "testRunner": "xunit",
+
+  "frameworks": {
+    "net462": {
+      "imports": "net462"
+    }
+  }
+}

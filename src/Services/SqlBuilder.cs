@@ -3,7 +3,6 @@ using HippocampusSql.Interfaces;
 using HippocampusSql.Model;
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -241,8 +240,6 @@ namespace HippocampusSql.Services
         /// Use <see cref="Materialize"/>
         /// </summary>
         /// <returns>SQL string</returns>
-        [Obsolete]
-        [SuppressMessage("Warning", "CS0809", Justification = "A fallback for those who don't know Materialize() method.")]
         public override string ToString()
             => Materialize();
         #endregion

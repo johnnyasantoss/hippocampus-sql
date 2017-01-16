@@ -10,16 +10,16 @@ using System;
 var target = Argument("target", "");
 var coverallsToken = Argument("coverallsToken", "");
 var buildConfig = Argument("buildconfiguration", "Debug");
-var buildPath = "./bin";
-var coverageFile = "./coverage-result.xml";
+var buildPath = "./src/bin";
+var coverageFile = "./src/coverage-result.xml";
+var srcProjectFile = File("./src/project.json");
 
 Task("SetVersion")
  .Does(() => 
  {
-	var file = File("project.json");
-	var jObj = ParseJsonFromFile(file);
+	var jObj = ParseJsonFromFile(srcProjectFile);
 	jObj["version"] = EnvironmentVariable("APPVEYOR_BUILD_VERSION") ?? jObj.Value<string>("version");
-	SerializeJsonToFile(file, jObj);
+	SerializeJsonToFile(srcProjectFile, jObj);
  });
 
 Task("Build")
@@ -29,7 +29,12 @@ Task("Build")
 	Information("========== Restoring packages ==========");
 	DotNetCoreRestore();
 	Information("=============== Building ===============");
-	DotNetCoreBuild(".\\project.json");
+	var settings = new DotNetCoreBuildSettings
+	{
+		Configuration = buildConfig,
+		OutputDirectory = "./artifacts/"
+	};
+	DotNetCoreBuild(srcProjectFile);
 	Information("========================================");
 })
 .OnError(ex => {
@@ -71,7 +76,7 @@ Task("Test")
     .Does(() =>
 {
 	Information("=============== Testing ================");
-	var testAssemblies = GetFiles("./bin/**/hippocampus-sql.dll");
+	var testAssemblies = GetFiles("./tests/bin/**/hippocampus-sql.dll");
 	DotNetCoreTest();
 	Information("========================================");
 });
@@ -105,7 +110,7 @@ Task("GenerateCoverageReport")
 	OpenCover(tool => tool.DotNetCoreTest(),
 	  new FilePath(coverageFile),
 	  new OpenCoverSettings()
-		.WithFilter("+[hippocampus-sql]*"));
+		.WithFilter("+[Hippocampus.SQL.Tests]*"));
 });
 
 if(!string.IsNullOrEmpty(target))

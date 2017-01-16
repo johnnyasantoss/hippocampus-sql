@@ -20,7 +20,9 @@ namespace HippocampusSql
         public ClassMetadataCache(Type type)
         {
             var props = type.GetProperties();
-            var table = type.GetCustomAttribute<TableAttribute>();
+            var table = type
+                .GetTypeInfo()
+                .GetCustomAttribute<TableAttribute>();
 
             if (table == null)
                 TableInfo = new TableInformation(type.Name);
