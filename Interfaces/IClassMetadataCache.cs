@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HippocampusSql.Model;
+using System.Collections.Generic;
 
 namespace HippocampusSql.Interfaces
 {
@@ -16,5 +17,10 @@ namespace HippocampusSql.Interfaces
         /// Table columns
         /// </summary>
         IEnumerable<string> Columns { get; }
+
+        /// <summary>
+        /// Information of the table, it schema and it abbreviation
+        /// </summary>
+        TableInformation TableInfo { get; }
     }
 }

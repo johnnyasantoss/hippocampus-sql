@@ -1,0 +1,30 @@
+version: 1.0.{build}
+environment:
+  COVERALLS_TOKEN:
+    secure: 51s8ulHCbos7AITtIf/y5wep2T2+wTHgOapg4/DT3EHIH/AH3mqnSqVZbKCWQYjN
+cache:
+- /packages
+- /tools
+build_script:
+- ps: .\build.ps1 -Target "Build"
+test_script:
+- ps: .\build.ps1 -Target "UploadCoverageReport" -coverallsToken="$ENV:COVERALLS_TOKEN"
+artifacts:
+- path: bin/**/hippocampus-sql.dll
+  name: build-dll
+- path: bin/**/hippocampus-sql.xml
+  name: build-xml
+- path: bin/**/hippocampus-sql.pdb
+  name: build-pdb
+deploy:
+- provider: NuGet
+  api_key:
+    secure: Ji1yD7O5TWE6Pb9me7AJmF3FD03dKRckdjRWu/B131AebmdDQclB+D5uVkj1HH52
+  on:
+    branch: master
+notifications:
+- provider: Slack
+  incoming_webhook: https://hooks.slack.com/services/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
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: false

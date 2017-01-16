@@ -19,8 +19,10 @@
     <DnxInvisibleFolder Include=".idea\" />
     <DnxInvisibleFolder Include=".vs\" />
     <DnxInvisibleFolder Include="packages\" />
+    <DnxInvisibleFolder Include="tools\" />
   </ItemGroup>
   <ItemGroup>
+    <DnxInvisibleContent Include="coverage-result.xml" />
     <DnxInvisibleContent Include="project.lock.json" />
   </ItemGroup>
   <ItemGroup>
