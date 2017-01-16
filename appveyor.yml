@@ -6,7 +6,7 @@ cache:
 - /packages
 - /tools
 build_script:
-- ps: .\build.ps1 -Target="Build" -coverallsToken=$ENV:COVERALLS_TOKEN
+- ps: .\build.ps1 -Target "Build" -coverallsToken=$ENV:COVERALLS_TOKEN
 artifacts:
 - path: '*'
   name: build.zip
