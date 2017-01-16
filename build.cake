@@ -1,7 +1,9 @@
 #addin Cake.Coveralls
+#addin Cake.Json
 
 #tool "nuget:?package=coveralls.io"
 #tool "nuget:?package=OpenCover"
+#tool "nuget:?package=Newtonsoft.Json"
 
 using System;
 
@@ -11,8 +13,18 @@ var buildConfig = Argument("buildconfiguration", "Debug");
 var buildPath = "./bin";
 var coverageFile = "./coverage-result.xml";
 
+Task("SetVersion")
+ .Does(() => 
+ {
+	var file = File("project.json");
+	var jObj = ParseJsonFromFile(file);
+	jObj["version"] = EnvironmentVariable("APPVEYOR_BUILD_VERSION") ?? jObj.Value<string>("version");
+	SerializeJsonToFile(file, jObj);
+ });
+
 Task("Build")
 .IsDependentOn("Clean")
+.IsDependentOn("SetVersion")
 .Does(() => {
 	Information("========== Restoring packages ==========");
 	DotNetCoreRestore();
