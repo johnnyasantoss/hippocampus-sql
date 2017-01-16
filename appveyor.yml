@@ -21,11 +21,11 @@ deploy_script:
 - ps: >-
     dotnet pack
 
-    cd bin/Debug
+    cd src/bin/Debug
 
     Write-Host "Uploading to NUGET package: Hippocampus.SQL.$ENV:APPVEYOR_BUILD_VERSION.nupkg"
 
-    nuget push "Hippocampus.SQL.$ENV:APPVEYOR_BUILD_VERSION.nupkg" "$ENV:NUGET_TOKEN"
+    nuget push "src.$ENV:APPVEYOR_BUILD_VERSION.nupkg" "$ENV:NUGET_TOKEN"
 notifications:
 - provider: Slack
   incoming_webhook: https://hooks.slack.com/services/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
