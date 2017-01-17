@@ -11,7 +11,7 @@
     "debugType": "full"
   },
 
-  "version": "1.0.0-0",
+  "version": "1.0.0.0",
 
   "dependencies": {
     "dotnet-test-xunit": "1.0.0-rc2-build10025",

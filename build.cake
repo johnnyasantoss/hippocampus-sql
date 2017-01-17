@@ -1,4 +1,5 @@
 #addin Cake.Coveralls
+#addin Cake.NuGet
 #addin Cake.Json
 
 #tool "nuget:?package=coveralls.io"
@@ -13,12 +14,13 @@ var buildPath = "./src/bin";
 var coverageFile = "./src/coverage-result.xml";
 var srcProjectFile = File("./src/project.json");
 var testsProjectFile = File("./tests/project.json");
+var appVeyorVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
 
 Task("SetVersion")
  .Does(() => 
  {
 	var jObj = ParseJsonFromFile(srcProjectFile);
-	jObj["version"] = EnvironmentVariable("APPVEYOR_BUILD_VERSION") ?? jObj.Value<string>("version");
+	jObj["version"] = appVeyorVersion ?? jObj.Value<string>("version");
 	SerializeJsonToFile(srcProjectFile, jObj);
  });
 
@@ -37,6 +39,26 @@ Task("Build")
 	DotNetCoreBuild(srcProjectFile);
 	DotNetCoreBuild(testsProjectFile);
 	Information("========================================");
+})
+.OnError(ex => {
+	Information("================ ERROR =================");
+	Information("Error.{0}{1}{0}", Environment.NewLine, ex);
+	RunTarget("Clean");
+});
+
+Task("Deploy")
+.IsDependentOn("Build")
+.Does(() => {
+	Information("============= Nuget Deploy =============");
+	DotNetCorePack(srcProjectFile, new DotNetCorePackSettings
+	{
+		OutputDirectory = "./artifacts/"
+	});
+	
+	NuGetPush(File("./artifacts/src." + appVeyorVersion + ".nupkg"),
+	new NuGetPushSettings {
+		ApiKey = EnvironmentVariable("NUGET_TOKEN")
+	});
 })
 .OnError(ex => {
 	Information("================ ERROR =================");

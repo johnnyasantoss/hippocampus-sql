@@ -18,16 +18,7 @@ artifacts:
 - path: src/bin/**/Hippocampus.SQL.pdb
   name: build-pdb
 deploy_script:
-- ps: >-
-    cd src
-
-    dotnet pack
-
-    cd bin/Debug
-
-    Write-Host "Uploading to NUGET package: Hippocampus.SQL.$ENV:APPVEYOR_BUILD_VERSION.nupkg"
-
-    nuget push "src.$ENV:APPVEYOR_BUILD_VERSION.nupkg" "$ENV:NUGET_TOKEN"
+- ps: .\build.ps1 -Target "Deploy"
 notifications:
 - provider: Slack
   incoming_webhook: https://hooks.slack.com/services/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
