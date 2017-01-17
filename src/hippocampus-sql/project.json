@@ -3,8 +3,9 @@
   "copyright": "Johnny Santos - 2017",
   "description": "HippocampusSQL is a package that helps you to create SQL queries.",
   "authors": [ "Johnny Santos <johnnyadsantos@gmail.com>" ],
-  "version": "0.0.1.0",
+  "version": "0.0.1-*",
   "buildOptions": {
+    "compile": "./**/*.cs",
     "outputName": "Hippocampus.SQL",
     "debugType": "full",
     "xmlDoc": true
@@ -26,7 +27,6 @@
     }
   },
   "packOptions": {
-    "id": "hippocampus-sql",
     "title": "HippocampusSQL",
     "projectUrl": "https://github.com/johnnyasantoss/hippocampus-sql",
     "owners": [ "Johnny Santos <johnnyadsantos@gmail.com>" ],

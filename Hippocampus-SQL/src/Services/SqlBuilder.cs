@@ -2,7 +2,6 @@
 using HippocampusSql.Interfaces;
 using HippocampusSql.Model;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -41,7 +40,7 @@ namespace HippocampusSql.Services
             if (exp == null)
                 throw new ArgumentNullException(nameof(exp), "An expression should be provided.");
 
-            Debug.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
+            Console.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
 
             if (exp is LambdaExpression)
             {
@@ -137,6 +136,7 @@ namespace HippocampusSql.Services
 
         private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
         {
+            Console.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
             var cache = _query.ClassCache;
             if (cache.Columns.Contains(exp.Member.Name))
             {

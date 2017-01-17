@@ -3,22 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "hippocampus-sql", "src\hippocampus-sql.xproj", "{09B189D9-6EE1-4154-AFCB-1A59C58E28A5}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "hippocampus-sql.tests", "tests\hippocampus-sql.tests.xproj", "{5411846C-4B24-40FF-9105-A0656D13CD4C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{61FCA6AE-1C9B-4197-9E28-757A9BE7F25F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EEAF557C-907D-476C-A8D1-7C56B6BC5B03}"
 	ProjectSection(SolutionItems) = preProject
-		.gitattributes = .gitattributes
-		.gitignore = .gitignore
-		appveyor.yml = appveyor.yml
-		build.cake = build.cake
-		build.ps1 = build.ps1
-		build.sh = build.sh
 		global.json = global.json
-		LICENSE = LICENSE
-		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.Tests", "Hippocampus.Tests\Hippocampus.Tests.csproj", "{F86BF001-1598-46F3-A9B5-E05470D33C55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus-SQL", "Hippocampus-SQL\Hippocampus-SQL.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,14 +18,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{09B189D9-6EE1-4154-AFCB-1A59C58E28A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09B189D9-6EE1-4154-AFCB-1A59C58E28A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09B189D9-6EE1-4154-AFCB-1A59C58E28A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09B189D9-6EE1-4154-AFCB-1A59C58E28A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5411846C-4B24-40FF-9105-A0656D13CD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5411846C-4B24-40FF-9105-A0656D13CD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5411846C-4B24-40FF-9105-A0656D13CD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5411846C-4B24-40FF-9105-A0656D13CD4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F86BF001-1598-46F3-A9B5-E05470D33C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F86BF001-1598-46F3-A9B5-E05470D33C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F86BF001-1598-46F3-A9B5-E05470D33C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F86BF001-1598-46F3-A9B5-E05470D33C55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
