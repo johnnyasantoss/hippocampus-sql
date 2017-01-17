@@ -1,5 +1,4 @@
 #addin Cake.Coveralls
-#addin Cake.NuGet
 #addin Cake.Json
 
 #tool "nuget:?package=coveralls.io"
@@ -33,32 +32,11 @@ Task("Build")
 	Information("=============== Building ===============");
 	var settings = new DotNetCoreBuildSettings
 	{
-		Configuration = buildConfig,
-		OutputDirectory = "./artifacts/"
+		Configuration = buildConfig
 	};
 	DotNetCoreBuild(srcProjectFile);
 	DotNetCoreBuild(testsProjectFile);
 	Information("========================================");
-})
-.OnError(ex => {
-	Information("================ ERROR =================");
-	Information("Error.{0}{1}{0}", Environment.NewLine, ex);
-	RunTarget("Clean");
-});
-
-Task("Deploy")
-.IsDependentOn("Build")
-.Does(() => {
-	Information("============= Nuget Deploy =============");
-	DotNetCorePack(srcProjectFile, new DotNetCorePackSettings
-	{
-		OutputDirectory = "./artifacts/"
-	});
-	
-	NuGetPush(File("./artifacts/src." + appVeyorVersion + ".nupkg"),
-	new NuGetPushSettings {
-		ApiKey = EnvironmentVariable("NUGET_TOKEN")
-	});
 })
 .OnError(ex => {
 	Information("================ ERROR =================");
@@ -134,7 +112,9 @@ Task("GenerateCoverageReport")
 	  new FilePath(coverageFile),
 	  new OpenCoverSettings()
 		.WithFilter("+[Hippocampus.SQL.Tests]*")
-		.WithFilter("+[Hippocampus.SQL]*"));
+		.WithFilter("+[Hippocampus.SQL]*")
+		.WithFilter("+[hippocampus-sql]*")
+	);
 });
 
 if(!string.IsNullOrEmpty(target))

@@ -4,13 +4,11 @@
   "description": "HippocampusSQL is a package that helps you to create SQL queries.",
   "authors": [ "Johnny Santos <johnnyadsantos@gmail.com>" ],
   "version": "0.0.1.0",
-
   "buildOptions": {
     "outputName": "Hippocampus.SQL",
     "debugType": "full",
     "xmlDoc": true
   },
-
   "dependencies": {
     "System.ComponentModel.Annotations": "4.3.0",
     "System.Runtime": {
@@ -20,7 +18,6 @@
     "System.Reflection": "4.3.0",
     "System.Reflection.TypeExtensions": "4.3.0"
   },
-
   "frameworks": {
     "net462": {
       "imports": [
@@ -28,14 +25,28 @@
       ]
     }
   },
-
   "packOptions": {
+    "id": "hippocampus-sql",
+    "title": "HippocampusSQL",
+    "projectUrl": "https://github.com/johnnyasantoss/hippocampus-sql",
     "owners": [ "Johnny Santos <johnnyadsantos@gmail.com>" ],
     "requireLicenseAcceptance": false,
     "summary": "HippocampusSQL is a package that helps you to create SQL queries.",
-    "tags": [ "sql", "sql gen", "sql generation", "dapper sql gen", "dapper sql generation" ],
-    "files": {},
-    "licenseUrl": "https://github.com/johnnyasantoss/hippocampus-sql/blob/master/LICENSE",
+    "tags": [
+      "sql",
+      "sql-gen",
+      "sql-generation",
+      "dapper-sql-gen",
+      "dapper-sql-generation"
+    ],
+    "files": {
+      "include": [
+        "../README.md",
+        "../LICENSE",
+        "./bin/**/Hippocampus.SQL.*"
+      ]
+    },
+    "licenseUrl": "https://raw.githubusercontent.com/johnnyasantoss/hippocampus-sql/master/LICENSE",
     "repository": {
       "type": "git",
       "url": "https://github.com/johnnyasantoss/hippocampus-sql"

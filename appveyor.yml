@@ -17,8 +17,7 @@ artifacts:
   name: build-xml
 - path: src/bin/**/Hippocampus.SQL.pdb
   name: build-pdb
-deploy_script:
-- ps: .\build.ps1 -Target "Deploy"
+deploy_script: off
 notifications:
 - provider: Slack
   incoming_webhook: https://hooks.slack.com/services/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
