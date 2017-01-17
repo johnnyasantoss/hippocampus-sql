@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 namespace HippocampusSql.Services
 {
     /// <summary>
-    /// SQL builder of a class
+    /// SQL Query builder of a class
     /// </summary>
     /// <typeparam name="T">Type of mapped class to create query from it.</typeparam>
     public class SqlBuilder<T> : ISqlBuilder<T>
@@ -153,7 +153,7 @@ namespace HippocampusSql.Services
         }
         #endregion
 
-        #region ISqlBuilde implementation
+        #region ISqlBuilder implementation
         /// <summary>
         /// Generates a select query
         /// </summary>
