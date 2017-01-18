@@ -7,6 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.SQL", "Hippocam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.SQL.Tests", "Hippocampus.SQL.Tests\Hippocampus.SQL.Tests.csproj", "{1EB54CEB-CA9C-457C-9B00-B6761C12D639}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A348C6AF-BE49-47AC-BD78-3940893A040D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		build.cake = build.cake
+		build.ps1 = build.ps1
+		build.sh = build.sh
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
