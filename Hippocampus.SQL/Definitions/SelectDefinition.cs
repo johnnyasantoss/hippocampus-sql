@@ -18,7 +18,7 @@ namespace HippocampusSql.Definitions
             Query.AppendInto(AppendType.Select,
                 s =>
                 {
-                    s.Append(" FROM ");
+                    s.AppendLine().Append(" FROM ");
                     var info = Query.ClassCache.TableInfo;
 
                     if (!string.IsNullOrWhiteSpace(info.Schema))

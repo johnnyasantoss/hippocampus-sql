@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Hippocampus.Tests")]
+[assembly: AssemblyTitle("Hippocampus.SQL.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Hippocampus.Tests")]
+[assembly: AssemblyProduct("Hippocampus.SQL.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f86bf001-1598-46f3-a9b5-e05470d33c55")]
+[assembly: Guid("1eb54ceb-ca9c-457c-9b00-b6761c12d639")]
 
 // Version information for an assembly consists of the following four values:
 //

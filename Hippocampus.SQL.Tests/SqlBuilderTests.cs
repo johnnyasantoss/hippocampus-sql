@@ -4,12 +4,12 @@ using Xunit;
 namespace HippocampusSql.Tests
 {
     /// <summary>
-    /// Tests for <see cref="SqlBuilder{T}"/>
-    /// </summary>
+    /// Tests for <see cref = "SqlBuilder{T}" />
+    /// </ summary >
     public class SqlBuilderTests
     {
         /// <summary>
-        /// Checks if <see cref="SqlBuilder{T}.Where(System.Linq.Expressions.Expression{System.Func{T, bool}})"/>
+        /// Checks if <see cref = "SqlBuilder{T}.Where(System.Linq.Expressions.Expression{System.Func{T, bool}})" />
         /// can generate a simple query with 1 where expression only
         /// </summary>
         [Fact]
@@ -19,15 +19,19 @@ namespace HippocampusSql.Tests
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == 0).Materialize();
+                .Where(t => t.Id == 0)
+                .Materialize();
 
-            const string expected = @"SELECT * FROM dbo.TEST
+            const string expected = @"SELECT Id
+, Name
+ FROM dbo.TEST
 WHERE (Id = @p1)";
 
             Assert.NotNull(where);
             Assert.NotEmpty(where);
             Assert.Equal(expected, where, true, true, true);
         }
+
         /// <summary>
         /// Checks if <see cref="SqlBuilder{T}.Where(System.Linq.Expressions.Expression{System.Func{T, bool}})"/>
         /// can generate a simple query with 1 where expression using a value from parameter
@@ -40,9 +44,12 @@ WHERE (Id = @p1)";
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == id).Materialize();
+                .Where(t => t.Id == id)
+                .Materialize();
 
-            const string expected = @"SELECT * FROM dbo.TEST
+            const string expected = @"SELECT Id
+, Name
+ FROM dbo.TEST
 WHERE (Id = @p1)";
 
             Assert.NotNull(where);
@@ -51,7 +58,7 @@ WHERE (Id = @p1)";
         }
 
         /// <summary>
-        /// Checks if <see cref="SqlBuilder{T}.Where(System.Linq.Expressions.Expression{System.Func{T, bool}})"/>
+        /// Checks if <see cref = "SqlBuilder{T}.Where(System.Linq.Expressions.Expression{System.Func{T, bool}})" />
         /// can generate a simple query with 2 where expressions
         /// </summary>
         [Fact]
@@ -61,9 +68,12 @@ WHERE (Id = @p1)";
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == 0 && t.Name != null).Materialize();
+                .Where(t => t.Id == 0 && t.Name != null)
+                .Materialize();
 
-            const string expected = @"SELECT * FROM dbo.TEST
+            const string expected = @"SELECT Id
+, Name
+ FROM dbo.TEST
 WHERE (Id = @p1
  AND Name <> null)";
 
@@ -87,7 +97,9 @@ WHERE (Id = @p1
                 .Where(t => t.Name != null)
                 .Materialize();
 
-            const string expected = @"SELECT * FROM dbo.TEST
+            const string expected = @"SELECT Id
+, Name
+ FROM dbo.TEST
 WHERE (Id = @p1)
  AND (Name <> null)";
 
@@ -113,9 +125,12 @@ WHERE (Id = @p1)
                 })
                 .Materialize();
 
+            const string expected = @"SELECT Id
+ FROM dbo.TEST";
+
             Assert.NotNull(sql);
             Assert.NotEmpty(sql);
-            Assert.Equal("SELECT Id FROM dbo.TEST", sql, true, true, true);
+            Assert.Equal(expected, sql, true, true, true);
         }
 
         /// <summary>
@@ -132,9 +147,13 @@ WHERE (Id = @p1)
                 .Select()
                 .Materialize();
 
+            const string expected = @"SELECT Id
+, Name
+ FROM dbo.TEST";
+
             Assert.NotNull(sql);
             Assert.NotEmpty(sql);
-            Assert.Equal("SELECT * FROM dbo.TEST", sql, true, true, true);
+            Assert.Equal(expected, sql, true, true, true);
         }
     }
 }

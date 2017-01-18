@@ -2,6 +2,8 @@
 using HippocampusSql.Interfaces;
 using HippocampusSql.Model;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -40,7 +42,7 @@ namespace HippocampusSql.Services
             if (exp == null)
                 throw new ArgumentNullException(nameof(exp), "An expression should be provided.");
 
-            Console.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
+            Debug.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
 
             if (exp is LambdaExpression)
             {
@@ -138,18 +140,43 @@ namespace HippocampusSql.Services
         {
             Console.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
             var cache = _query.ClassCache;
+
+            Lazy<string> expTypeName = new Lazy<string>(() => exp.GetType().Name);
             if (cache.Columns.Contains(exp.Member.Name))
             {
-                if (!string.IsNullOrWhiteSpace(cache.TableInfo.Abbreviation))
-                {
-                    ResolveExpression(exp.Expression, appendType);
-                    _query.AppendInto(appendType, s => s.Append('.'));
-                }
+                AppendColumn(exp.Member.Name, appendType, cache.TableInfo);
+            }
+            else if (typeof(IEnumerable<string>).IsAssignableFrom(exp.Type))
+            {
+                var columns = Expression.Lambda<Func<IEnumerable<string>>>(exp)
+                    .Compile()()
+                    .ToArray();
 
-                _query.AppendInto(appendType, s => s.Append(exp.Member.Name));
+                int len = columns.Length;
+
+                for (int i = 0; i < len; i++)
+                {
+                    if (i >= 1)
+                        _query.AppendInto(appendType, s => s.AppendLine().Append(", "));
+                    AppendColumn(columns[i], appendType, cache.TableInfo);
+                }
+            }
+            else if (expTypeName.Value == "FieldExpression")
+            {
+                ResolveExpression(exp.Expression, appendType);
             }
             else
                 throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
+        }
+
+        private void AppendColumn(string columnName, AppendType appendType, TableInformation info)
+        {
+            if (!string.IsNullOrWhiteSpace(info.Abbreviation))
+            {
+                _query.AppendInto(appendType, s => s.Append(info.Abbreviation).Append('.'));
+            }
+
+            _query.AppendInto(appendType, s => s.Append(columnName));
         }
         #endregion
 
@@ -177,7 +204,7 @@ namespace HippocampusSql.Services
         {
             using (_query.BeginSelect())
             {
-                Expression<Func<char>> exp = () => '*';
+                Expression<Func<IEnumerable<string>>> exp = () => _query.ClassCache.Columns;
                 ResolveExpression(exp, AppendType.Select);
             }
 

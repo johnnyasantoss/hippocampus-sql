@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HippocampusSql.Tests
 {
     [Table("TEST", Schema = "dbo")]
-    internal class TestClass
+    public class TestClass
     {
         [Key, Column]
         public int Id { get; set; }
