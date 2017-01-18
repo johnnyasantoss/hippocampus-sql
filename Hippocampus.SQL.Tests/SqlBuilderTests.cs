@@ -28,7 +28,6 @@ namespace HippocampusSql.Tests
 WHERE (Id = @p1)";
 
             Assert.NotNull(where);
-            Assert.NotEmpty(where);
             Assert.Equal(expected, where, true, true, true);
         }
 
@@ -53,7 +52,6 @@ WHERE (Id = @p1)";
 WHERE (Id = @p1)";
 
             Assert.NotNull(where);
-            Assert.NotEmpty(where);
             Assert.Equal(expected, where, true, true, true);
         }
 
@@ -78,7 +76,6 @@ WHERE (Id = @p1
  AND Name <> null)";
 
             Assert.NotNull(where);
-            Assert.NotEmpty(where);
             Assert.Equal(expected, where, true, true, true);
         }
 
@@ -104,7 +101,6 @@ WHERE (Id = @p1)
  AND (Name <> null)";
 
             Assert.NotNull(where);
-            Assert.NotEmpty(where);
             Assert.Equal(expected, where, true, true, true);
         }
 
@@ -129,7 +125,6 @@ WHERE (Id = @p1)
  FROM dbo.TEST";
 
             Assert.NotNull(sql);
-            Assert.NotEmpty(sql);
             Assert.Equal(expected, sql, true, true, true);
         }
 
@@ -152,7 +147,6 @@ WHERE (Id = @p1)
  FROM dbo.TEST";
 
             Assert.NotNull(sql);
-            Assert.NotEmpty(sql);
             Assert.Equal(expected, sql, true, true, true);
         }
     }

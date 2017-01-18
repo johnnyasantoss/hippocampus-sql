@@ -32,11 +32,12 @@ namespace HippocampusSql.Services
             QueryInfo = new SqlQueryInfo(
                 new ClassMetadataCache(typeof(T))
                 , Beautify
-                );
+            );
         }
 
 
         #region Expression resolvers
+
         private void ResolveExpression(Expression exp, AppendType appendType)
         {
             if (exp == null)
@@ -46,30 +47,30 @@ namespace HippocampusSql.Services
 
             if (exp is LambdaExpression)
             {
-                var lamdaExp = ((LambdaExpression)exp);
+                var lamdaExp = ((LambdaExpression) exp);
 
                 ResolveExpression(lamdaExp.Body, appendType);
             }
             else if (exp is BinaryExpression)
             {
-                ResolveBinaryExpression((BinaryExpression)exp, appendType);
+                ResolveBinaryExpression((BinaryExpression) exp, appendType);
             }
             else if (exp is MemberExpression)
             {
-                ResolveMemberExpression((MemberExpression)exp, appendType);
+                ResolveMemberExpression((MemberExpression) exp, appendType);
             }
             else if (exp is UnaryExpression)
             {
-                ResolveExpression(((UnaryExpression)exp).Operand, appendType);
+                ResolveExpression(((UnaryExpression) exp).Operand, appendType);
             }
             else if (exp is ConstantExpression)
             {
-                var constExp = (ConstantExpression)exp;
+                var constExp = (ConstantExpression) exp;
                 string paramKey;
 
                 if (constExp.Value == null)
                     paramKey = "null";
-                else if (constExp.Value is char && ((char)constExp.Value) == '*')
+                else if (constExp.Value is char && ((char) constExp.Value) == '*')
                     paramKey = "*";
                 else
                     paramKey = QueryInfo.GenerateNewParameter(constExp.Value);
@@ -78,7 +79,7 @@ namespace HippocampusSql.Services
             }
             else if (exp is ParameterExpression)
             {
-                QueryInfo.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
+                QueryInfo.AppendInto(appendType, s => s.Append(((ParameterExpression) exp).Name));
             }
             else if (exp is NewArrayExpression)
             {
@@ -110,24 +111,24 @@ namespace HippocampusSql.Services
                 case ExpressionType.AndAlso:
                     QueryInfo.AppendInto(appendType,
                         s => s.AppendLine()
-                              .Append(" AND ")
-                        );
+                            .Append(" AND ")
+                    );
                     break;
                 case ExpressionType.OrElse:
                     QueryInfo.AppendInto(appendType,
                         s => s.AppendLine()
-                              .Append(" OR ")
-                        );
+                            .Append(" OR ")
+                    );
                     break;
                 case ExpressionType.Equal:
                     QueryInfo.AppendInto(appendType,
                         s => s.Append(" = ")
-                        );
+                    );
                     break;
                 case ExpressionType.NotEqual:
                     QueryInfo.AppendInto(appendType,
                         s => s.Append(" <> ")
-                        );
+                    );
                     break;
                 default:
                     throw new NotSupportedException($"The expression type \"{exp.NodeType}\" not supported yet.");
@@ -178,9 +179,11 @@ namespace HippocampusSql.Services
 
             QueryInfo.AppendInto(appendType, s => s.Append(columnName));
         }
+
         #endregion
 
         #region ISqlBuilder implementation
+
         /// <summary>
         /// Generates a select query
         /// </summary>
@@ -258,17 +261,23 @@ namespace HippocampusSql.Services
         /// Generates the sql string made out of this builder
         /// </summary>
         /// <returns>SQL string</returns>
-        public string Materialize() => QueryInfo.ToSqlString();
+        public SqlQuery Materialize() => new SqlQuery
+        {
+            Content = QueryInfo.ToSqlString(),
+            NamedParameters = QueryInfo.Parameters
+        };
 
         #endregion
 
         #region Overrides
+
         /// <summary>
         /// Use <see cref="Materialize"/>
         /// </summary>
         /// <returns>SQL string</returns>
         public override string ToString()
-            => Materialize();
+            => QueryInfo.ToSqlString();
+
         #endregion
     }
 }
