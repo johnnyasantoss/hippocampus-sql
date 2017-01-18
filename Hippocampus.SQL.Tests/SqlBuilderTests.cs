@@ -5,7 +5,7 @@ namespace HippocampusSql.Tests
 {
     /// <summary>
     /// Tests for <see cref = "SqlBuilder{T}" />
-    /// </ summary >
+    /// </summary >
     public class SqlBuilderTests
     {
         /// <summary>
@@ -139,7 +139,7 @@ WHERE (Id = @p1)
         /// can generate a everything select
         /// </summary>
         [Fact]
-        public void CanGenerateSelectWithWildCard()
+        public void CanGenerateSelect()
         {
             var sqlBuilder = new SqlBuilder<TestClass>();
 

@@ -4,6 +4,6 @@ namespace HippocampusSql.Interfaces
 {
     internal interface IWhereDefinition : IDisposable
     {
-        ISqlQuery Query { get; }
+        ISqlQueryInfo QueryInfo { get; }
     }
 }

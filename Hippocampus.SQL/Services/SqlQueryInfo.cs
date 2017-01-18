@@ -7,17 +7,17 @@ using System.Text;
 
 namespace HippocampusSql.Services
 {
-    internal class SqlQuery : ISqlQuery
+    internal class SqlQueryInfo : ISqlQueryInfo
     {
-        public SqlQuery(IClassMetadataCache classCache, bool beautify)
+        public SqlQueryInfo(IClassMetadataCache classCache, bool beautify)
         {
-            Beautify = beautify;
+            _beautify = beautify;
             ClassCache = classCache;
         }
 
-        public bool Beautify { get; }
+        private readonly bool _beautify;
 
-        public IClassMetadataCache ClassCache { get; set; }
+        public IClassMetadataCache ClassCache { get; }
 
         public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
@@ -37,7 +37,7 @@ namespace HippocampusSql.Services
         public string ToSqlString()
         {
             return new StringBuilder(Select.ToString())
-                .Append(Where.ToString())
+                .Append(Where)
                 .ToString()
                 .TrimEnd();
         }

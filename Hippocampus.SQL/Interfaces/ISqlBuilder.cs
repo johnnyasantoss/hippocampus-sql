@@ -61,7 +61,7 @@ namespace HippocampusSql.Interfaces
         /// <summary>
         /// Generates the sql string made out of this builder
         /// </summary>
-        /// <returns>SQL string</returns>
-        string Materialize();
+        /// <returns>SQL query</returns>
+        SqlQuery Materialize();
     }
 }

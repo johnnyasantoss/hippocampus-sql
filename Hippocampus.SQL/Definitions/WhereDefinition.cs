@@ -5,25 +5,25 @@ namespace HippocampusSql.Definitions
 {
     internal class WhereDefinition : IWhereDefinition
     {
-        public ISqlQuery Query { get; }
+        public ISqlQueryInfo QueryInfo { get; }
 
-        public WhereDefinition(ISqlQuery sqlQuery)
+        public WhereDefinition(ISqlQueryInfo sqlQueryInfo)
         {
-            Query = sqlQuery;
-            Query.WhereDefinitions++;
+            QueryInfo = sqlQueryInfo;
+            QueryInfo.WhereDefinitions++;
 
-            if (Query.WhereDefinitions > 1)
-                Query.AppendInto(AppendType.Where,
+            if (QueryInfo.WhereDefinitions > 1)
+                QueryInfo.AppendInto(AppendType.Where,
                     s => s.AppendLine()
                           .Append(" AND (")
                           );
             else
-                Query.AppendInto(AppendType.Where, s => s.Append("WHERE ("));
+                QueryInfo.AppendInto(AppendType.Where, s => s.Append("WHERE ("));
         }
 
         public void Dispose()
         {
-            Query.AppendInto(AppendType.Where, s => s.Append(')'));
+            QueryInfo.AppendInto(AppendType.Where, s => s.Append(')'));
         }
     }
 }

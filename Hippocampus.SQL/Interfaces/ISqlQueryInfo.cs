@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HippocampusSql.Interfaces
 {
-    internal interface ISqlQuery
+    internal interface ISqlQueryInfo
     {
         IClassMetadataCache ClassCache { get; }
 

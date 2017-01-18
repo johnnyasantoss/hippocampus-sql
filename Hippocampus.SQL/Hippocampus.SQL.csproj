@@ -52,12 +52,13 @@
     <Compile Include="Interfaces\IClassMetadataCache.cs" />
     <Compile Include="Interfaces\ISelectDefinition.cs" />
     <Compile Include="Interfaces\ISqlBuilder.cs" />
-    <Compile Include="Interfaces\ISqlQuery.cs" />
+    <Compile Include="Interfaces\ISqlQueryInfo.cs"/>
     <Compile Include="Interfaces\IWhereDefinition.cs" />
+    <Compile Include="Model\SqlQuery.cs"/>
     <Compile Include="Model\TableInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\SqlBuilder.cs" />
-    <Compile Include="Services\SqlQuery.cs" />
+    <Compile Include="Services\SqlQueryInfo.cs"/>
     <Compile Include="SqlKeyWords.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
