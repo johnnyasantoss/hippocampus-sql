@@ -1,42 +1,56 @@
 #addin Cake.Coveralls
-#addin Cake.Json
 
 #tool "nuget:?package=coveralls.io"
 #tool "nuget:?package=OpenCover"
 
-using System;
-
 var target = Argument("target", "");
 var coverallsToken = Argument("coverallsToken", "");
 var buildConfig = Argument("buildconfiguration", "Debug");
-var buildPath = "./src/bin";
-var coverageFile = "./src/coverage-result.xml";
-var srcProjectFile = File("./src/project.json");
-var testsProjectFile = File("./tests/project.json");
+
+var coverageFile = File("./TestResults/coverage-result.xml");
+var solutionFile = File("./Hippocampus.SQL.sln");
+var srcProject = Directory("./Hippocampus.SQL");
+
 var appVeyorVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
+var appVeyorBuild = EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
 
 Task("SetVersion")
  .Does(() => 
  {
-	var jObj = ParseJsonFromFile(srcProjectFile);
-	jObj["version"] = appVeyorVersion ?? jObj.Value<string>("version");
-	SerializeJsonToFile(srcProjectFile, jObj);
+	var file = srcProject + File("Properties/AssemblyInfo.cs");
+
+	var assemblyInfo = ParseAssemblyInfo("./SolutionInfo.cs");
+
+	var version = appVeyorVersion ?? assemblyInfo.AssemblyVersion;
+	var buildNo = appVeyorBuild ?? "0";
+	var semVersion = string.Concat(version, "-", buildNo);
+
+	CreateAssemblyInfo(file, new AssemblyInfoSettings {
+		Product = "Hippocampus SQL",
+		Version = version,
+		FileVersion = version,
+		InformationalVersion = semVersion,
+		Copyright = string.Format("Copyright (c) Johnny Santos 2017 - {0}", DateTime.Now.Year)
+	});
  });
 
-Task("Build")
+Task("Build ")
 .IsDependentOn("Clean")
 .IsDependentOn("SetVersion")
 .Does(() => {
 	Information("========== Restoring packages ==========");
-	DotNetCoreRestore();
+	StartProcess("./nuget-restore.ps1", new ProcessSettings{
+		RedirectStandardOutput = true,
+		RedirectStandardError = true
+	});
+
 	Information("=============== Building ===============");
-	var settings = new DotNetCoreBuildSettings
-	{
-		Configuration = buildConfig
-	};
-	DotNetCoreBuild(srcProjectFile);
-	DotNetCoreBuild(testsProjectFile);
-	Information("========================================");
+	MSBuild(srcProjectFile, new MSBuildSettings {
+		Verbosity = Verbosity.Minimal,
+		ToolVersion = MSBuildToolVersion.VS2015,
+		Configuration = "Release",
+		PlatformTarget = PlatformTarget.MSIL
+    });
 })
 .OnError(ex => {
 	Information("================ ERROR =================");
