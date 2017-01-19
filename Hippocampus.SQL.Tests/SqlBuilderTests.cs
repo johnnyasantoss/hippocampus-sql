@@ -1,4 +1,5 @@
-﻿using HippocampusSql.Services;
+﻿using System;
+using HippocampusSql.Services;
 using Xunit;
 
 namespace HippocampusSql.Tests
@@ -52,6 +53,8 @@ WHERE (Id = @p1)";
 WHERE (Id = @p1)";
 
             Assert.NotNull(where);
+            Assert.NotEmpty(where.NamedParameters);
+            Assert.Contains(where.NamedParameters, pair => id == Convert.ToInt32(pair.Value));
             Assert.Equal(expected, where, true, true, true);
         }
 

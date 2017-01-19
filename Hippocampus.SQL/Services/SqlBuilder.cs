@@ -6,14 +6,34 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace HippocampusSql.Services
 {
     /// <summary>
+    /// Use <see cref="SqlBuilder{T}"/>
+    /// </summary>
+    public class SqlBuilder
+    {
+        internal SqlBuilder()
+        {
+        }
+
+        protected static readonly MethodInfo LamdaMethod = typeof(Expression)
+            .GetMethods()
+            .First(m => m.Name == nameof(Expression.Lambda)
+                        && typeof(Expression).IsAssignableFrom(m.ReturnType)
+                        && m.GetParameters()
+                            .Select(p => p.ParameterType)
+                            .SequenceEqual(new[] {typeof(Expression), typeof(ParameterExpression[])})
+            );
+    }
+
+    /// <summary>
     /// SQL Query builder of a class
     /// </summary>
     /// <typeparam name="T">Type of mapped class to create query from it.</typeparam>
-    public class SqlBuilder<T> : ISqlBuilder<T>
+    public class SqlBuilder<T> : SqlBuilder, ISqlBuilder<T>
         where T : class
     {
         private ISqlQueryInfo QueryInfo { get; }
@@ -83,7 +103,7 @@ namespace HippocampusSql.Services
             }
             else if (exp is NewArrayExpression)
             {
-                ResolveNewArrayExpression(exp as NewArrayExpression, appendType);
+                ResolveNewArrayExpression((NewArrayExpression) exp, appendType);
             }
             else
                 throw new NotImplementedException("Expression not implemented.");
@@ -139,10 +159,9 @@ namespace HippocampusSql.Services
 
         private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
         {
-            Console.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
             var cache = QueryInfo.ClassCache;
 
-            Lazy<string> expTypeName = new Lazy<string>(() => exp.GetType().Name);
+            var expTypeName = new Lazy<string>(() => exp.GetType().Name);
             if (cache.Columns.Contains(exp.Member.Name))
             {
                 AppendColumn(exp.Member.Name, appendType, cache.TableInfo);
@@ -153,21 +172,48 @@ namespace HippocampusSql.Services
                     .Compile()()
                     .ToArray();
 
-                int len = columns.Length;
+                var len = columns.Length;
 
-                for (int i = 0; i < len; i++)
+                for (var i = 0; i < len; i++)
                 {
                     if (i >= 1)
                         QueryInfo.AppendInto(appendType, s => s.AppendLine().Append(", "));
                     AppendColumn(columns[i], appendType, cache.TableInfo);
                 }
             }
-            else if (expTypeName.Value == "FieldExpression")
+            else if (expTypeName.Value == "FieldExpression"
+                     || expTypeName.Value == "PropertyExpression")
             {
-                ResolveExpression(exp.Expression, appendType);
+                var value = GetValueFromExpression(exp);
+
+                var paramKey = value == null ? "null" : QueryInfo.GenerateNewParameter(value);
+
+                QueryInfo.AppendInto(appendType, s => s.Append(paramKey));
             }
             else
                 throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
+        }
+
+        private static object GetValueFromExpression(MemberExpression exp)
+        {
+            var mLamda = LamdaMethod
+                .MakeGenericMethod(
+                    typeof(Func<>)
+                        .MakeGenericType(exp.Type)
+                );
+
+            var mCompile = mLamda.ReturnType
+                .GetMethods()
+                .First(m => m.Name == nameof(Expression<int>.Compile)
+                            && !m.GetParameters().Any());
+
+            var expression = mLamda.Invoke(null, new object[] {exp, null});
+
+            var func = (Delegate) mCompile.Invoke(expression, new object[0]);
+
+            var value = func.DynamicInvoke();
+
+            return value;
         }
 
         private void AppendColumn(string columnName, AppendType appendType, TableInformation info)
