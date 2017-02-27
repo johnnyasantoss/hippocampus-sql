@@ -1,19 +1,19 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Hippocampus SQL")]
-[assembly: AssemblyDescription("HippocampusSQL is a package that helps you to create SQL queries using Linq expressions.")]
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("hippocampus-sql")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("Hippocampus.SQL")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
+// COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: Guid("4ba706a8-045b-4a0d-b00f-963232bc4b25")]
-
-[assembly: AssemblyVersion("0.0.1.4")]
-[assembly: AssemblyFileVersion("0.0.1.4")]
-[assembly: AssemblyInformationalVersion("0.0.1.4-alpha")]
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("509f8801-d42f-447d-9889-2cc5810208ab")]
