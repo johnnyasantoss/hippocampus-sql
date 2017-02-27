@@ -7,7 +7,14 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Hippocampus.SQL", "Hippocam
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E2FA4DD7-5B7A-4F8A-A49C-88477726CCC5}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		build.cake = build.cake
 		global.json = global.json
+		LICENSE = LICENSE
+		nuget-build.bat = nuget-build.bat
+		nuget-restore.bat = nuget-restore.bat
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.SQL.Tests", "Hippocampus.SQL.Tests\Hippocampus.SQL.Tests.csproj", "{1EB54CEB-CA9C-457C-9B00-B6761C12D639}"
