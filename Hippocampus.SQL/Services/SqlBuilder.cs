@@ -25,7 +25,7 @@ namespace HippocampusSql.Services
                         && typeof(Expression).IsAssignableFrom(m.ReturnType)
                         && m.GetParameters()
                             .Select(p => p.ParameterType)
-                            .SequenceEqual(new[] {typeof(Expression), typeof(ParameterExpression[])})
+                            .SequenceEqual(new[] { typeof(Expression), typeof(ParameterExpression[]) })
             );
     }
 
@@ -67,30 +67,30 @@ namespace HippocampusSql.Services
 
             if (exp is LambdaExpression)
             {
-                var lamdaExp = ((LambdaExpression) exp);
+                var lamdaExp = ((LambdaExpression)exp);
 
                 ResolveExpression(lamdaExp.Body, appendType);
             }
             else if (exp is BinaryExpression)
             {
-                ResolveBinaryExpression((BinaryExpression) exp, appendType);
+                ResolveBinaryExpression((BinaryExpression)exp, appendType);
             }
             else if (exp is MemberExpression)
             {
-                ResolveMemberExpression((MemberExpression) exp, appendType);
+                ResolveMemberExpression((MemberExpression)exp, appendType);
             }
             else if (exp is UnaryExpression)
             {
-                ResolveExpression(((UnaryExpression) exp).Operand, appendType);
+                ResolveExpression(((UnaryExpression)exp).Operand, appendType);
             }
             else if (exp is ConstantExpression)
             {
-                var constExp = (ConstantExpression) exp;
+                var constExp = (ConstantExpression)exp;
                 string paramKey;
 
                 if (constExp.Value == null)
                     paramKey = "null";
-                else if (constExp.Value is char && ((char) constExp.Value) == '*')
+                else if (constExp.Value is char && ((char)constExp.Value) == '*')
                     paramKey = "*";
                 else
                     paramKey = QueryInfo.GenerateNewParameter(constExp.Value);
@@ -99,11 +99,11 @@ namespace HippocampusSql.Services
             }
             else if (exp is ParameterExpression)
             {
-                QueryInfo.AppendInto(appendType, s => s.Append(((ParameterExpression) exp).Name));
+                QueryInfo.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
             }
             else if (exp is NewArrayExpression)
             {
-                ResolveNewArrayExpression((NewArrayExpression) exp, appendType);
+                ResolveNewArrayExpression((NewArrayExpression)exp, appendType);
             }
             else
                 throw new NotImplementedException("Expression not implemented.");
@@ -207,9 +207,9 @@ namespace HippocampusSql.Services
                 .First(m => m.Name == nameof(Expression<int>.Compile)
                             && !m.GetParameters().Any());
 
-            var expression = mLamda.Invoke(null, new object[] {exp, null});
+            var expression = mLamda.Invoke(null, new object[] { exp, null });
 
-            var func = (Delegate) mCompile.Invoke(expression, new object[0]);
+            var func = (Delegate)mCompile.Invoke(expression, new object[0]);
 
             var value = func.DynamicInvoke();
 
