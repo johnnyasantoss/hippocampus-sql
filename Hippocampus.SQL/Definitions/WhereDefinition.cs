@@ -5,9 +5,9 @@ namespace HippocampusSql.Definitions
 {
     internal class WhereDefinition : IWhereDefinition
     {
-        public ISqlQueryInfo QueryInfo { get; }
+        public ISqlStatmentInfo QueryInfo { get; }
 
-        public WhereDefinition(ISqlQueryInfo sqlQueryInfo)
+        public WhereDefinition(ISqlStatmentInfo sqlQueryInfo)
         {
             QueryInfo = sqlQueryInfo;
             QueryInfo.WhereDefinitions++;

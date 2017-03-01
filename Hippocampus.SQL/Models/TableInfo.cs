@@ -1,4 +1,4 @@
-﻿namespace HippocampusSql.Model
+﻿namespace HippocampusSql.Models
 {
     /// <summary>
     /// Table information

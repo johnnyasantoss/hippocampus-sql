@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HippocampusSql.Model
+namespace HippocampusSql.Models
 {
     /// <summary>
     /// Information of generated SQL Query

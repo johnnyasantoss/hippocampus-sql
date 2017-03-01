@@ -1,38 +1,46 @@
-﻿using HippocampusSql.Enums;
-using HippocampusSql.Interfaces;
+﻿using HippocampusSql.Interfaces;
+using HippocampusSql.Services;
+using HippocampusSql.Utils;
+using System;
+using System.Linq.Expressions;
+using System.Text;
 
 namespace HippocampusSql.Definitions
 {
-    internal class SelectDefinition : ISelectDefinition
+    public class SelectDefinition : ISelectDefinition
     {
-        public ISqlQueryInfo QueryInfo { get; }
-
-        public SelectDefinition(ISqlQueryInfo queryInfo)
+        public SelectDefinition(
+            ISqlStatmentInfo info
+            , Expression<Func<object[]>> columnsSelector
+            )
         {
-            QueryInfo = queryInfo;
-            QueryInfo.AppendInto(AppendType.Select, s => s.Append("SELECT "));
+            info.CheckArgumentNull(nameof(info));
+
+            Info = info;
+            ExpressionResolver.ResolveSelect(columnsSelector);
         }
 
-        public void Dispose()
+        public ISqlStatmentInfo Info { get; }
+
+        public StringBuilder AppendSqlInto(StringBuilder s)
         {
-            QueryInfo.AppendInto(AppendType.Select,
-                s =>
-                {
-                    s.AppendLine().Append(" FROM ");
-                    var info = QueryInfo.ClassCache.TableInfo;
+            s.Append(" FROM ");
+            var info = Info.ClassCache.TableInfo;
 
-                    if (!string.IsNullOrWhiteSpace(info.Schema))
-                        s.Append(info.Schema)
-                         .Append('.');
+            if (!string.IsNullOrWhiteSpace(info.Schema))
+                s.Append(info.Schema)
+                 .Append('.');
 
-                    s.Append(info.Name);
+            s.Append(info.Name);
 
-                    if (!string.IsNullOrWhiteSpace(info.Abbreviation))
-                        s.Append(" AS ")
-                         .Append(info.Abbreviation);
+            if (!string.IsNullOrWhiteSpace(info.Abbreviation))
+                s.Append(" AS ")
+                 .Append(info.Abbreviation);
 
-                    return s.AppendLine();
-                });
+            return s;
         }
+
+        public string ToSql()
+            => AppendSqlInto(new StringBuilder()).ToString();
     }
 }

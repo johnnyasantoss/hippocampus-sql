@@ -1,9 +1,6 @@
-﻿using System;
-
-namespace HippocampusSql.Interfaces
+﻿namespace HippocampusSql.Interfaces
 {
-    internal interface ISelectDefinition : IDisposable
+    public interface ISelectDefinition : ISqlDefinition
     {
-        ISqlQueryInfo QueryInfo { get; }
     }
 }

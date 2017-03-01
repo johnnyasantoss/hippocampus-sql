@@ -7,7 +7,7 @@ using System.Text;
 
 namespace HippocampusSql.Services
 {
-    internal class SqlQueryInfo : ISqlQueryInfo
+    internal class SqlQueryInfo : ISqlStatmentInfo
     {
         public SqlQueryInfo(IClassMetadataCache classCache, bool beautify)
         {
