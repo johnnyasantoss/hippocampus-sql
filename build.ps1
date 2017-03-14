@@ -44,15 +44,12 @@ Param(
     [string]$Target = "Default",
     [ValidateSet("Release", "Debug")]
     [string]$Configuration = "Release",
-    [ValidateSet("homologacao", "Debug", "Release")]
-    [string]$BuildConfiguration = "Release",
     [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
-    [string]$Verbosity = "Normal",
+    [string]$Verbosity = "Verbose",
     [switch]$Experimental,
     [Alias("DryRun","Noop")]
     [switch]$WhatIf,
     [switch]$Mono,
-    [switch]$DebugCake,
     [switch]$SkipToolPackageRestore,
     [Parameter(Position=0,Mandatory=$false,ValueFromRemainingArguments=$true)]
     [string[]]$ScriptArgs
@@ -82,6 +79,8 @@ function MD5HashFile([string] $filePath)
         }
     }
 }
+
+Write-Host "Preparing to run build script..."
 
 if(!$PSScriptRoot){
     $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -114,12 +113,6 @@ if($WhatIf.IsPresent) {
     $UseDryRun = "-dryrun"
 }
 
-# Is this a dry run?
-$IsInDebug = "";
-if($DebugCake.IsPresent) {
-    $IsInDebug = "-debug"
-}
-
 # Make sure tools folder exists
 if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
     Write-Verbose -Message "Creating tools directory..."
@@ -137,7 +130,7 @@ if (!(Test-Path $PACKAGES_CONFIG)) {
 # Try find NuGet.exe in path if not exists
 if (!(Test-Path $NUGET_EXE)) {
     Write-Verbose -Message "Trying to find nuget.exe in PATH..."
-    $existingPaths = $Env:Path -Split ';' | Where-Object { (![string]::IsNullOrEmpty($_)) -and (Test-Path $_) }
+    $existingPaths = $Env:Path -Split ';' | Where-Object { (![string]::IsNullOrEmpty($_)) -and (Test-Path $_ -PathType Container) }
     $NUGET_EXE_IN_PATH = Get-ChildItem -Path $existingPaths -Filter "nuget.exe" | Select -First 1
     if ($NUGET_EXE_IN_PATH -ne $null -and (Test-Path $NUGET_EXE_IN_PATH.FullName)) {
         Write-Verbose -Message "Found in PATH at $($NUGET_EXE_IN_PATH.FullName)."
@@ -191,5 +184,6 @@ if (!(Test-Path $CAKE_EXE)) {
 }
 
 # Start Cake
-Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" -buildconfiguration=`"$BuildConfiguration`" $UseMono $UseDryRun $UseExperimental $IsInDebug $ScriptArgs"
+Write-Host "Running build script..."
+Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $ScriptArgs"
 exit $LASTEXITCODE
