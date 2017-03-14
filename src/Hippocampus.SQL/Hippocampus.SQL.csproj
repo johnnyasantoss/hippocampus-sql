@@ -7,12 +7,17 @@
     <AssemblyName>Hippocampus.SQL</AssemblyName>
     <PackageId>Hippocampus.SQL</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <RootNamespace>HippocampusSql</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
     <PackageReference Include="System.Runtime" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Enums\" />
   </ItemGroup>
 
 </Project>

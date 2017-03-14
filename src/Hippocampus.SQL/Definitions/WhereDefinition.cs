@@ -1,29 +1,27 @@
-﻿using HippocampusSql.Enums;
+﻿using System;
+using System.Text;
 using HippocampusSql.Interfaces;
 
 namespace HippocampusSql.Definitions
 {
     internal class WhereDefinition : IWhereDefinition
     {
-        public ISqlStatmentInfo QueryInfo { get; }
-
         public WhereDefinition(ISqlStatmentInfo sqlQueryInfo)
         {
-            QueryInfo = sqlQueryInfo;
-            QueryInfo.WhereDefinitions++;
-
-            if (QueryInfo.WhereDefinitions > 1)
-                QueryInfo.AppendInto(AppendType.Where,
-                    s => s.AppendLine()
-                          .Append(" AND (")
-                          );
-            else
-                QueryInfo.AppendInto(AppendType.Where, s => s.Append("WHERE ("));
         }
 
-        public void Dispose()
+        public ISqlStatement Statement { get; }
+
+        public StringBuilder AppendSqlInto(StringBuilder strBuilder)
         {
-            QueryInfo.AppendInto(AppendType.Where, s => s.Append(')'));
+            if (Statement.WhereCommand == null)
+                Statement.WhereCommand = new WhereCommandDefinition();
+
+
+            strBuilder.Append(" WHERE FUNC ");
         }
+
+        public string ToSql()
+            => AppendSqlInto(new StringBuilder()).ToString();
     }
 }

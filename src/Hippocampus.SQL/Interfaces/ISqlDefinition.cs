@@ -4,7 +4,7 @@ namespace HippocampusSql.Interfaces
 {
     public interface ISqlDefinition
     {
-        ISqlStatmentInfo Info { get; }
+        ISqlStatement Statement { get; }
 
         StringBuilder AppendSqlInto(StringBuilder strBuilder);
 

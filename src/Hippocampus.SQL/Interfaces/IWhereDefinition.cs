@@ -1,9 +1,6 @@
-﻿using System;
-
-namespace HippocampusSql.Interfaces
+﻿namespace HippocampusSql.Interfaces
 {
-    internal interface IWhereDefinition : IDisposable
+    internal interface IWhereDefinition : ISqlDefinition
     {
-        ISqlStatmentInfo QueryInfo { get; }
     }
 }

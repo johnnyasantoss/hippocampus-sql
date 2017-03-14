@@ -1,6 +1,6 @@
-﻿using HippocampusSql.Utils;
+﻿using HippocampusSql.Interfaces;
+using HippocampusSql.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -9,7 +9,7 @@ namespace HippocampusSql.Services
 {
     public static class ExpressionResolver
     {
-        public static IEnumerable<ISqlSelectedDefinition> ResolveSelect(Expression<Func<object[]>> columns)
+        public static IEnumerable<ISelectDefinition> ResolveSelect(Expression<Func<object[]>> columns)
         {
             columns.CheckArgumentNull(nameof(columns));
 
