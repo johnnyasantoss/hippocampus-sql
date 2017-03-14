@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Copyright>Johnny Anderson dos Santos - 2017</Copyright>
     <AssemblyTitle>Hippocampus SQL</AssemblyTitle>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard1.5</TargetFramework>
     <AssemblyName>Hippocampus.SQL</AssemblyName>
     <PackageId>Hippocampus.SQL</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
