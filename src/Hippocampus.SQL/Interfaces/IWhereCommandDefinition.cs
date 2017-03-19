@@ -1,6 +1,6 @@
 ﻿namespace HippocampusSql.Interfaces
 {
-    public interface IWhereCommandDefinition
+    public interface IWhereCommandDefinition : ISqlDefinition
     {
     }
 }

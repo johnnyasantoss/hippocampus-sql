@@ -1,4 +1,4 @@
-﻿using HippocampusSql.Model;
+﻿using HippocampusSql.Models;
 using System.Collections.Generic;
 
 namespace HippocampusSql.Interfaces

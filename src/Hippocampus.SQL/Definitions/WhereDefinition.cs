@@ -4,15 +4,14 @@ using HippocampusSql.Interfaces;
 
 namespace HippocampusSql.Definitions
 {
-    internal class WhereDefinition : IWhereDefinition
+    internal class WhereDefinition : SqlDefinition, IWhereDefinition
     {
-        public WhereDefinition(ISqlStatmentInfo sqlQueryInfo)
+        public WhereDefinition(ISqlStatment statementInfo)
+        : base(statementInfo)
         {
         }
 
-        public ISqlStatement Statement { get; }
-
-        public StringBuilder AppendSqlInto(StringBuilder strBuilder)
+        public override StringBuilder AppendSqlInto(StringBuilder strBuilder)
         {
             if (Statement.WhereCommand == null)
                 Statement.WhereCommand = new WhereCommandDefinition();
@@ -20,8 +19,5 @@ namespace HippocampusSql.Definitions
 
             strBuilder.Append(" WHERE FUNC ");
         }
-
-        public string ToSql()
-            => AppendSqlInto(new StringBuilder()).ToString();
     }
 }
