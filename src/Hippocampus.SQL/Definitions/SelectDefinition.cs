@@ -7,25 +7,21 @@ using System.Text;
 
 namespace HippocampusSql.Definitions
 {
-    public class SelectDefinition : ISelectDefinition
+    internal class SelectDefinition : SqlDefinition, ISelectDefinition
     {
         public SelectDefinition(
             ISqlStatmentInfo info
             , Expression<Func<object[]>> columnsSelector
             )
+            : base(info)
         {
-            info.CheckArgumentNull(nameof(info));
-
-            Info = info;
             ExpressionResolver.ResolveSelect(columnsSelector);
         }
 
-        public ISqlStatmentInfo Info { get; }
-
-        public StringBuilder AppendSqlInto(StringBuilder s)
+        public override StringBuilder AppendSqlInto(StringBuilder s)
         {
             s.Append(" FROM ");
-            var info = Info.ClassCache.TableInfo;
+            var info = Statment.ClassCache.TableInfo;
 
             if (!string.IsNullOrWhiteSpace(info.Schema))
                 s.Append(info.Schema)
@@ -39,8 +35,5 @@ namespace HippocampusSql.Definitions
 
             return s;
         }
-
-        public string ToSql()
-            => AppendSqlInto(new StringBuilder()).ToString();
     }
 }

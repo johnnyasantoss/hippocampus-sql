@@ -57,7 +57,7 @@ namespace HippocampusSql.Interfaces
         /// <summary>
         /// Definitions in this builder
         /// </summary>
-        IEnumerable<ISqlDefinition> Definitions { get; }
+        ICollection<ISqlDefinition> Definitions { get; }
 
 
         /// <summary>
