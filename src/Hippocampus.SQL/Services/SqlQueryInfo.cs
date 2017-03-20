@@ -1,5 +1,4 @@
 ﻿using HippocampusSql.Definitions;
-using HippocampusSql.Enums;
 using HippocampusSql.Interfaces;
 using System;
 using System.Collections.Generic;

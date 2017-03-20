@@ -6,10 +6,6 @@ namespace HippocampusSql.Interfaces
     {
         ICollection<ISqlDefinition> Definitions { get; }
 
-        IWhereCommandDefinition WhereCommand { get; set; }
-
-        IClassMetadataCache ClassCache { get; }
-
         IDictionary<string, object> Parameters { get; }
 
         string GenerateNewParameter(object value);
