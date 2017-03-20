@@ -1,52 +1,52 @@
-﻿using HippocampusSql.Interfaces;
+﻿using HippocampusSql.Definitions;
+using HippocampusSql.Interfaces;
+using HippocampusSql.Models;
 using HippocampusSql.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace HippocampusSql.Services
 {
     public static class ExpressionResolver
     {
-        public static IEnumerable<ISelectDefinition> ResolveSelect(Expression<Func<object[]>> columns)
+        public static IEnumerable<ISqlDefinition> ResolveSelect(ISelectDefinition selectDef, Expression<Func<object[]>> columns)
         {
-            columns.CheckArgumentNull(nameof(columns));
+            columns.CheckNull(nameof(columns));
 
-            if (columns.Body is NewArrayExpression)
-                ResolveNewArrayExpression(columns.Body as NewArrayExpression);
+            if (columns.Body is NewArrayExpression arrExp)
+                return ResolveNewArrayExpression(arrExp, selectDef.Statement);
             else
                 throw new InvalidOperationException("Columns selector expression should be an NewArrayExpression.");
         }
 
-        private void ResolveExpression(Expression exp)
+        private static IEnumerable<ISqlDefinition> ResolveExpression(Expression exp, ISqlStatement statement)
         {
             if (exp == null)
                 throw new ArgumentNullException(nameof(exp), "An expression should be provided.");
 
             Debug.WriteLine($"Resolving expression: {exp.GetType().FullName}:{exp}", "Info");
 
-            if (exp is LambdaExpression)
+            if (exp is LambdaExpression lamdaExp)
             {
-                var lamdaExp = ((LambdaExpression)exp);
-
-                ResolveExpression(lamdaExp.Body);
+                return ResolveExpression(lamdaExp.Body, statement);
             }
-            else if (exp is BinaryExpression)
+            else if (exp is BinaryExpression bExp)
             {
-                ResolveBinaryExpression((BinaryExpression)exp);
+                return ResolveBinaryExpression(bExp, statement);
             }
-            else if (exp is MemberExpression)
+            else if (exp is MemberExpression memberExp)
             {
-                ResolveMemberExpression((MemberExpression)exp);
+                return ResolveMemberExpression(memberExp, statement);
             }
-            else if (exp is UnaryExpression)
+            else if (exp is UnaryExpression unaryExp)
             {
-                ResolveExpression(((UnaryExpression)exp).Operand);
+                return ResolveExpression(unaryExp.Operand, statement);
             }
-            else if (exp is ConstantExpression)
+            else if (exp is ConstantExpression constExp)
             {
-                var constExp = (ConstantExpression)exp;
                 string paramKey;
 
                 if (constExp.Value == null)
@@ -54,26 +54,33 @@ namespace HippocampusSql.Services
                 else if (constExp.Value is char && ((char)constExp.Value) == '*')
                     paramKey = "*";
                 else
-                    paramKey = QueryInfo.GenerateNewParameter(constExp.Value);
+                    paramKey = statement.GenerateNewParameter(constExp.Value);
 
-                QueryInfo.AppendInto(appendType, s => s.Append(paramKey));
+                return new ISqlDefinition[1] { new SelectItemDefinition(statement, paramKey) };
             }
             else if (exp is ParameterExpression)
             {
-                QueryInfo.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
+                //QueryInfo.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
+                throw new NotImplementedException();
             }
-            else if (exp is NewArrayExpression)
+            else if (exp is NewArrayExpression newArrExp)
             {
-                ResolveNewArrayExpression((NewArrayExpression)exp, appendType);
+                return ResolveNewArrayExpression(newArrExp, statement);
             }
             else
                 throw new NotImplementedException("Expression not implemented.");
         }
 
-        private static void ResolveNewArrayExpression(NewArrayExpression expression)
+        private static IEnumerable<ISqlDefinition> ResolveNewArrayExpression(NewArrayExpression expression
+            , ISqlStatement statement
+            )
         {
+            var list = new List<IEnumerable<ISqlDefinition>>();
+
             foreach (var exp in expression.Expressions)
-                ResolveExpression(exp);
+                list.Add(ResolveExpression(exp, statement));
+
+            return list.SelectMany(l => l);
         }
 
         private void ResolveBinaryExpression(BinaryExpression exp, AppendType appendType)
@@ -111,73 +118,73 @@ namespace HippocampusSql.Services
             ResolveExpression(exp.Right, appendType);
         }
 
-        private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
-        {
-            var cache = QueryInfo.ClassCache;
+        //private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
+        //{
+        //    var cache = QueryInfo.ClassCache;
 
-            var expTypeName = new Lazy<string>(() => exp.GetType().Name);
-            if (cache.Columns.Contains(exp.Member.Name))
-            {
-                AppendColumn(exp.Member.Name, appendType, cache.TableInfo);
-            }
-            else if (typeof(IEnumerable<string>).IsAssignableFrom(exp.Type))
-            {
-                var columns = Expression.Lambda<Func<IEnumerable<string>>>(exp)
-                    .Compile()()
-                    .ToArray();
+        //    var expTypeName = new Lazy<string>(() => exp.GetType().Name);
+        //    if (cache.Columns.Contains(exp.Member.Name))
+        //    {
+        //        AppendColumn(exp.Member.Name, appendType, cache.TableInfo);
+        //    }
+        //    else if (typeof(IEnumerable<string>).IsAssignableFrom(exp.Type))
+        //    {
+        //        var columns = Expression.Lambda<Func<IEnumerable<string>>>(exp)
+        //            .Compile()()
+        //            .ToArray();
 
-                var len = columns.Length;
+        //        var len = columns.Length;
 
-                for (var i = 0; i < len; i++)
-                {
-                    if (i >= 1)
-                        QueryInfo.AppendInto(appendType, s => s.AppendLine().Append(", "));
-                    AppendColumn(columns[i], appendType, cache.TableInfo);
-                }
-            }
-            else if (expTypeName.Value == "FieldExpression"
-                     || expTypeName.Value == "PropertyExpression")
-            {
-                var value = GetValueFromExpression(exp);
+        //        for (var i = 0; i < len; i++)
+        //        {
+        //            if (i >= 1)
+        //                QueryInfo.AppendInto(appendType, s => s.AppendLine().Append(", "));
+        //            AppendColumn(columns[i], appendType, cache.TableInfo);
+        //        }
+        //    }
+        //    else if (expTypeName.Value == "FieldExpression"
+        //             || expTypeName.Value == "PropertyExpression")
+        //    {
+        //        var value = GetValueFromExpression(exp);
 
-                var paramKey = value == null ? "null" : QueryInfo.GenerateNewParameter(value);
+        //        var paramKey = value == null ? "null" : QueryInfo.GenerateNewParameter(value);
 
-                QueryInfo.AppendInto(appendType, s => s.Append(paramKey));
-            }
-            else
-                throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
-        }
+        //        QueryInfo.AppendInto(appendType, s => s.Append(paramKey));
+        //    }
+        //    else
+        //        throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
+        //}
 
-        private static object GetValueFromExpression(MemberExpression exp)
-        {
-            var mLamda = LamdaMethod
-                .MakeGenericMethod(
-                    typeof(Func<>)
-                        .MakeGenericType(exp.Type)
-                );
+        //private static object GetValueFromExpression(MemberExpression exp)
+        //{
+        //    var mLamda = LamdaMethod
+        //        .MakeGenericMethod(
+        //            typeof(Func<>)
+        //                .MakeGenericType(exp.Type)
+        //        );
 
-            var mCompile = mLamda.ReturnType
-                .GetMethods()
-                .First(m => m.Name == nameof(Expression<int>.Compile)
-                            && !m.GetParameters().Any());
+        //    var mCompile = mLamda.ReturnType
+        //        .GetMethods()
+        //        .First(m => m.Name == nameof(Expression<int>.Compile)
+        //                    && !m.GetParameters().Any());
 
-            var expression = mLamda.Invoke(null, new object[] { exp, null });
+        //    var expression = mLamda.Invoke(null, new object[] { exp, null });
 
-            var func = (Delegate)mCompile.Invoke(expression, new object[0]);
+        //    var func = (Delegate)mCompile.Invoke(expression, new object[0]);
 
-            var value = func.DynamicInvoke();
+        //    var value = func.DynamicInvoke();
 
-            return value;
-        }
+        //    return value;
+        //}
 
-        private void AppendColumn(string columnName, AppendType appendType, TableInformation info)
-        {
-            if (!string.IsNullOrWhiteSpace(info.Abbreviation))
-            {
-                QueryInfo.AppendInto(appendType, s => s.Append(info.Abbreviation).Append('.'));
-            }
+        //private void AppendColumn(string columnName, AppendType appendType, TableInformation info)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(info.Abbreviation))
+        //    {
+        //        QueryInfo.AppendInto(appendType, s => s.Append(info.Abbreviation).Append('.'));
+        //    }
 
-            QueryInfo.AppendInto(appendType, s => s.Append(columnName));
-        }
+        //    QueryInfo.AppendInto(appendType, s => s.Append(columnName));
+        //}
     }
 }

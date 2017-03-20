@@ -10,18 +10,21 @@ namespace HippocampusSql.Definitions
     internal class SelectDefinition : SqlDefinition, ISelectDefinition
     {
         public SelectDefinition(
-            ISqlStatmentInfo info
+            ISqlStatement info
             , Expression<Func<object[]>> columnsSelector
+            , Type selectedType
             )
             : base(info)
         {
-            ExpressionResolver.ResolveSelect(columnsSelector);
+            SelectedType = selectedType.CheckNull(nameof(selectedType));
+            ExpressionResolver.ResolveSelect(this, columnsSelector);
         }
+
+        public Type SelectedType { get; }
 
         public override StringBuilder AppendSqlInto(StringBuilder s)
         {
-            s.Append(" FROM ");
-            var info = Statment.ClassCache.TableInfo;
+            var info = Statement.ClassCache[SelectedType].TableInfo;
 
             if (!string.IsNullOrWhiteSpace(info.Schema))
                 s.Append(info.Schema)

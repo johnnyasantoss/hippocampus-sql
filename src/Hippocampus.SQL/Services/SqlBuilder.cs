@@ -1,9 +1,7 @@
-﻿using HippocampusSql.Enums;
-using HippocampusSql.Interfaces;
-using HippocampusSql.Model;
+﻿using HippocampusSql.Interfaces;
+using HippocampusSql.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,15 +9,25 @@ using System.Reflection;
 namespace HippocampusSql.Services
 {
     /// <summary>
-    /// Use <see cref="SqlBuilder{T}"/>
+    /// SQL Query builder of a class
     /// </summary>
-    public class SqlBuilder
+    /// <typeparam name="T">Type of mapped class to create query from it.</typeparam>
+    public class SqlBuilder<T> : ISqlBuilder<T>
+        where T : class
     {
-        internal SqlBuilder()
+        public ICollection<ISqlDefinition> Definitions { get; }
+
+        /// <summary>
+        /// Create a new <see cref="SqlBuilder{T}"/>
+        /// </summary>
+        public SqlBuilder()
         {
+            Definitions = new List<ISqlDefinition>();
         }
 
-        protected static readonly MethodInfo LamdaMethod = typeof(Expression)
+        static SqlBuilder()
+        {
+            LamdaMethod = typeof(Expression)
             .GetMethods()
             .First(m => m.Name == nameof(Expression.Lambda)
                         && typeof(Expression).IsAssignableFrom(m.ReturnType)
@@ -27,33 +35,9 @@ namespace HippocampusSql.Services
                             .Select(p => p.ParameterType)
                             .SequenceEqual(new[] { typeof(Expression), typeof(ParameterExpression[]) })
             );
-    }
-
-    /// <summary>
-    /// SQL Query builder of a class
-    /// </summary>
-    /// <typeparam name="T">Type of mapped class to create query from it.</typeparam>
-    public class SqlBuilder<T> : SqlBuilder, ISqlBuilder<T>
-        where T : class
-    {
-        private ISqlStatmentInfo QueryInfo { get; }
-
-        /// <summary>
-        /// Defines if query should have line-breaks
-        /// </summary>
-        public bool Beautify { get; set; }
-
-        /// <summary>
-        /// Create a new <see cref="SqlBuilder{T}"/>
-        /// </summary>
-        public SqlBuilder(bool beautify = true)
-        {
-            Beautify = beautify;
-            QueryInfo = new SqlQueryInfo(
-                new ClassMetadataCache(typeof(T))
-                , Beautify
-            );
         }
+
+        protected static readonly MethodInfo LamdaMethod;
 
 
         #region ISqlBuilder implementation
@@ -66,26 +50,17 @@ namespace HippocampusSql.Services
         /// <returns>This builder</returns>
         public ISqlBuilder<T> Select(Expression<Func<T, object[]>> selector, TableInformation? info = null)
         {
-            using (QueryInfo.BeginSelect())
-                ResolveExpression(selector, AppendType.Select);
-
-            return this;
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Generates a select query
+        /// Generates a select query that fetches all mapped columns
         /// </summary>
         /// <param name="info">Information of the table that will be selected</param>
         /// <returns>This builder</returns>
         public ISqlBuilder<T> Select(TableInformation? info = null)
         {
-            using (QueryInfo.BeginSelect())
-            {
-                Expression<Func<IEnumerable<string>>> exp = () => QueryInfo.ClassCache.Columns;
-                ResolveExpression(exp, AppendType.Select);
-            }
-
-            return this;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -125,21 +100,17 @@ namespace HippocampusSql.Services
         /// <returns>This builder</returns>
         public ISqlBuilder<T> Where(Expression<Func<T, bool>> predicate)
         {
-            using (QueryInfo.BeginWhere())
-                ResolveExpression(predicate, AppendType.Where);
-
-            return this;
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Generates the sql string made out of this builder
         /// </summary>
         /// <returns>SQL string</returns>
-        public SqlQuery Materialize() => new SqlQuery
+        public SqlQuery Materialize()
         {
-            Content = QueryInfo.ToSqlString(),
-            NamedParameters = QueryInfo.Parameters
-        };
+            throw new NotImplementedException();
+        }
 
         #endregion
 
@@ -150,8 +121,20 @@ namespace HippocampusSql.Services
         /// </summary>
         /// <returns>SQL string</returns>
         public override string ToString()
-            => QueryInfo.ToSqlString();
-
+        {
+            throw new NotImplementedException();
+        }
         #endregion
+
+        public ISqlBuilder<T> AppendDefinition(ISqlDefinition definition)
+        {
+            Definitions.Add(definition);
+            return this;
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

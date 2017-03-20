@@ -1,5 +1,4 @@
-﻿using HippocampusSql.Models;
-using System.Collections.Generic;
+﻿using System;
 
 namespace HippocampusSql.Interfaces
 {
@@ -8,19 +7,6 @@ namespace HippocampusSql.Interfaces
     /// </summary>
     public interface IClassMetadataCache
     {
-        /// <summary>
-        /// Table keys
-        /// </summary>
-        IEnumerable<string> Keys { get; }
-
-        /// <summary>
-        /// Table columns
-        /// </summary>
-        IEnumerable<string> Columns { get; }
-
-        /// <summary>
-        /// Information of the table, it schema and it abbreviation
-        /// </summary>
-        TableInformation TableInfo { get; }
+        IClassMetadata this[Type classType] { get; }
     }
 }

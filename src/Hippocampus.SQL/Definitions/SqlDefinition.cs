@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using HippocampusSql.Interfaces;
 using HippocampusSql.Utils;
@@ -7,9 +6,9 @@ namespace HippocampusSql.Definitions
 {
     internal abstract class SqlDefinition : ISqlDefinition
     {
-        public SqlDefinition(ISqlStatment statementInfo)
+        public SqlDefinition(ISqlStatement statementInfo)
         {
-            statementInfo.CheckArgumentNull(nameof(info));
+            statementInfo.CheckNull(nameof(statementInfo));
             Statement = statementInfo;
         }
 

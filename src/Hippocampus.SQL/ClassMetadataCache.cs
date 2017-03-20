@@ -1,10 +1,6 @@
-﻿using HippocampusSql.Interfaces;
-using HippocampusSql.Models;
-using System;
+﻿using System;
+using HippocampusSql.Interfaces;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection;
 
 namespace HippocampusSql
 {
@@ -13,54 +9,30 @@ namespace HippocampusSql
     /// </summary>
     public class ClassMetadataCache : IClassMetadataCache
     {
-        /// <summary>
-        /// Creates a chace of a table info
-        /// </summary>
-        /// <param name="type">Type of the mapped class</param>
-        public ClassMetadataCache(Type type)
+        private static readonly IDictionary<string, IClassMetadata> _cache = new Dictionary<string, IClassMetadata>();
+
+        private static readonly object _cacheLock = new object();
+
+        public IClassMetadata this[Type classType]
         {
-            var props = type.GetProperties();
-            var table = type
-                .GetTypeInfo()
-                .GetCustomAttribute<TableAttribute>();
-
-            if (table == null)
-                TableInfo = new TableInformation(type.Name);
-            else
-                TableInfo = new TableInformation(table.Name, table.Schema);
-
-            foreach (var prop in props)
+            get
             {
-                var isKey = prop.GetCustomAttribute(typeof(KeyAttribute)) != null;
-                var columnInfo = (ColumnAttribute)prop.GetCustomAttribute(typeof(ColumnAttribute));
+                lock (_cacheLock)
+                {
+                    var fullName = classType.FullName;
 
-                var name = columnInfo?.Name ?? prop.Name;
+                    if (!_cache.ContainsKey(fullName))
+                        _cache[fullName] = GetClassMetadata(classType);
 
-                if (isKey)
-                    Keys.Add(name);
-                Columns.Add(name);
+                    return _cache[fullName];
+                }
             }
         }
 
-        /// <summary>
-        /// Mapped columns
-        /// </summary>
-        public List<string> Columns { get; } = new List<string>();
-
-        /// <summary>
-        /// Mapped Keys
-        /// </summary>
-        public List<string> Keys { get; } = new List<string>();
-
-        /// <summary>
-        /// Table informations
-        /// </summary>
-        public TableInformation TableInfo { get; }
-
-        IEnumerable<string> IClassMetadataCache.Columns
-            => Columns;
-
-        IEnumerable<string> IClassMetadataCache.Keys
-            => Keys;
+        private IClassMetadata GetClassMetadata(Type classType)
+        {
+            //TODO: Implement a better log of this action
+            return new ClassMetadata(classType);
+        }
     }
 }
