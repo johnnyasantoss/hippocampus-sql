@@ -3,16 +3,16 @@ using HippocampusSql.Interfaces;
 
 namespace HippocampusSql.Definitions
 {
-    internal class WhereDefinition : SqlDefinition, IWhereDefinition
+    internal class AndDefinition : SqlDefinition, IAndDefinition
     {
-        public WhereDefinition(ISqlStatement statementInfo)
-        : base(statementInfo)
+        public AndDefinition(ISqlStatement statementInfo)
+            : base(statementInfo)
         {
         }
 
         public override StringBuilder AppendSqlInto(StringBuilder strBuilder)
         {
-            return strBuilder.Append(" WHERE FUNC ");
+            return strBuilder.Append(" AND ");
         }
     }
 }

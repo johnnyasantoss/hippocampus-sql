@@ -8,5 +8,7 @@ namespace HippocampusSql.Interfaces
     public interface IClassMetadataCache
     {
         IClassMetadata this[Type classType] { get; }
+
+        bool Contains(Type type);
     }
 }

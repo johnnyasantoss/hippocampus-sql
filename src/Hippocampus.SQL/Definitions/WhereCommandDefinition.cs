@@ -6,7 +6,7 @@ namespace HippocampusSql.Definitions
 {
     internal class WhereCommandDefinition : SqlDefinition, IWhereCommandDefinition
     {
-        public WhereCommandDefinition(ISqlStatment statementInfo)
+        public WhereCommandDefinition(ISqlStatement statementInfo)
         : base(statementInfo)
         {
         }

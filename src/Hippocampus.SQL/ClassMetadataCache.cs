@@ -29,6 +29,11 @@ namespace HippocampusSql
             }
         }
 
+        public bool Contains(Type type)
+        {
+            return _cache.ContainsKey(type.FullName);
+        }
+
         private IClassMetadata GetClassMetadata(Type classType)
         {
             //TODO: Implement a better log of this action

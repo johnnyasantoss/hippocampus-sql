@@ -1,17 +1,32 @@
 ﻿using HippocampusSql.Definitions;
 using HippocampusSql.Interfaces;
-using HippocampusSql.Models;
 using HippocampusSql.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace HippocampusSql.Services
 {
     public static class ExpressionResolver
     {
+        static ExpressionResolver()
+        {
+            LamdaMethod = typeof(Expression)
+            .GetMethods()
+            .First(m => m.Name == nameof(Expression.Lambda)
+                        && typeof(Expression).IsAssignableFrom(m.ReturnType)
+                        && m.GetParameters()
+                            .Select(p => p.ParameterType)
+                            .SequenceEqual(new[] { typeof(Expression), typeof(ParameterExpression[]) })
+            );
+        }
+
+        private static readonly MethodInfo LamdaMethod;
+
+
         public static IEnumerable<ISqlDefinition> ResolveSelect(ISelectDefinition selectDef, Expression<Func<object[]>> columns)
         {
             columns.CheckNull(nameof(columns));
@@ -83,108 +98,102 @@ namespace HippocampusSql.Services
             return list.SelectMany(l => l);
         }
 
-        private void ResolveBinaryExpression(BinaryExpression exp, AppendType appendType)
+        private static IEnumerable<ISqlDefinition> ResolveBinaryExpression(BinaryExpression exp, ISqlStatement statement)
         {
-            ResolveExpression(exp.Left, appendType);
+            var left = ResolveExpression(exp.Left, statement);
 
+            ISqlDefinition middle;
             switch (exp.NodeType)
             {
                 case ExpressionType.AndAlso:
-                    QueryInfo.AppendInto(appendType,
-                        s => s.AppendLine()
-                            .Append(" AND ")
-                    );
+                    middle = new AndDefinition(statement);
                     break;
                 case ExpressionType.OrElse:
-                    QueryInfo.AppendInto(appendType,
-                        s => s.AppendLine()
-                            .Append(" OR ")
-                    );
+                    middle = new OrElseDefinition(statement);
                     break;
                 case ExpressionType.Equal:
-                    QueryInfo.AppendInto(appendType,
-                        s => s.Append(" = ")
-                    );
+                    middle = new EqualDefinition(statement);
                     break;
                 case ExpressionType.NotEqual:
-                    QueryInfo.AppendInto(appendType,
-                        s => s.Append(" <> ")
-                    );
+                    middle = new NotEqualDefinition(statement);
                     break;
                 default:
                     throw new NotSupportedException($"The expression type \"{exp.NodeType}\" not supported yet.");
             }
 
-            ResolveExpression(exp.Right, appendType);
+            var right = ResolveExpression(exp.Right, statement);
+
+            return left
+                .Concat(new[] { middle })
+                .Concat(right);
         }
 
-        //private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
-        //{
-        //    var cache = QueryInfo.ClassCache;
+        private static IEnumerable<ISqlDefinition> ResolveMemberExpression(MemberExpression exp, ISqlStatement statement)
+        {
+            var memberType = exp.Member.DeclaringType;
+            var cache = statement.ClassCache[memberType];
 
-        //    var expTypeName = new Lazy<string>(() => exp.GetType().Name);
-        //    if (cache.Columns.Contains(exp.Member.Name))
-        //    {
-        //        AppendColumn(exp.Member.Name, appendType, cache.TableInfo);
-        //    }
-        //    else if (typeof(IEnumerable<string>).IsAssignableFrom(exp.Type))
-        //    {
-        //        var columns = Expression.Lambda<Func<IEnumerable<string>>>(exp)
-        //            .Compile()()
-        //            .ToArray();
+            var expTypeName = new Lazy<string>(() => exp.GetType().Name);
 
-        //        var len = columns.Length;
+            var memberName = exp.Member.Name;
 
-        //        for (var i = 0; i < len; i++)
-        //        {
-        //            if (i >= 1)
-        //                QueryInfo.AppendInto(appendType, s => s.AppendLine().Append(", "));
-        //            AppendColumn(columns[i], appendType, cache.TableInfo);
-        //        }
-        //    }
-        //    else if (expTypeName.Value == "FieldExpression"
-        //             || expTypeName.Value == "PropertyExpression")
-        //    {
-        //        var value = GetValueFromExpression(exp);
+            if (cache.Columns.Contains(memberName))
+            {
+                return new[] { new ColumnDefinition(statement, memberName, cache) };
+            }
+            else if (typeof(IEnumerable<string>).IsAssignableFrom(exp.Type))
+            {
+                var columns = Expression.Lambda<Func<IEnumerable<string>>>(exp)
+                    .Compile()()
+                    .ToArray();
 
-        //        var paramKey = value == null ? "null" : QueryInfo.GenerateNewParameter(value);
+                var len = columns.Length;
+                var definitions = new ISqlDefinition[len];
 
-        //        QueryInfo.AppendInto(appendType, s => s.Append(paramKey));
-        //    }
-        //    else
-        //        throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
-        //}
+                bool isFirst = true;
+                for (var i = 0; i < len; i++)
+                {
+                    if (isFirst && i >= 1)
+                        isFirst = false;
+                    definitions[i] = new ColumnDefinition(statement, memberName, cache, isFirst: true);
+                }
 
-        //private static object GetValueFromExpression(MemberExpression exp)
-        //{
-        //    var mLamda = LamdaMethod
-        //        .MakeGenericMethod(
-        //            typeof(Func<>)
-        //                .MakeGenericType(exp.Type)
-        //        );
+                return definitions;
+            }
+            else if (expTypeName.Value == "FieldExpression"
+                     || expTypeName.Value == "PropertyExpression")
+            {
+                var value = GetValueFromExpression(exp);
 
-        //    var mCompile = mLamda.ReturnType
-        //        .GetMethods()
-        //        .First(m => m.Name == nameof(Expression<int>.Compile)
-        //                    && !m.GetParameters().Any());
+                var paramKey = value == null ? "null" : statement.GenerateNewParameter(value);
 
-        //    var expression = mLamda.Invoke(null, new object[] { exp, null });
+                return new[] { new ColumnDefinition(statement, paramKey, cache) };
+            }
+            else
+                throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
+        }
 
-        //    var func = (Delegate)mCompile.Invoke(expression, new object[0]);
+        private static object GetValueFromExpression(MemberExpression exp)
+        {
+            // TODO: Implement a cache system for this make generics
+            var mLamda = LamdaMethod
+                .MakeGenericMethod(
+                    typeof(Func<>)
+                        .MakeGenericType(exp.Type)
+                );
 
-        //    var value = func.DynamicInvoke();
+            var mCompile = mLamda.ReturnType
+                .GetMethods()
+                .First(m => m.Name == nameof(Expression<int>.Compile)
+                            && !m.GetParameters().Any());
 
-        //    return value;
-        //}
+            var expression = mLamda.Invoke(null, new object[] { exp, null });
 
-        //private void AppendColumn(string columnName, AppendType appendType, TableInformation info)
-        //{
-        //    if (!string.IsNullOrWhiteSpace(info.Abbreviation))
-        //    {
-        //        QueryInfo.AppendInto(appendType, s => s.Append(info.Abbreviation).Append('.'));
-        //    }
+            var func = (Delegate)mCompile.Invoke(expression, new object[0]);
 
-        //    QueryInfo.AppendInto(appendType, s => s.Append(columnName));
-        //}
+            var value = func.DynamicInvoke();
+
+            return value;
+        }
     }
 }

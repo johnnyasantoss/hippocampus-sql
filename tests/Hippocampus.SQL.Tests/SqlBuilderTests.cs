@@ -20,7 +20,7 @@ namespace HippocampusSql.Tests
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == 0)
+                //.Where(t => t.Id == 0)
                 .Materialize();
 
             const string expected = @"SELECT Id
@@ -44,7 +44,7 @@ WHERE (Id = @p1)";
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == id)
+                //.Where(t => t.Id == id)
                 .Materialize();
 
             const string expected = @"SELECT Id
@@ -69,7 +69,7 @@ WHERE (Id = @p1)";
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == 0 && t.Name != null)
+                //.Where(t => t.Id == 0 && t.Name != null)
                 .Materialize();
 
             const string expected = @"SELECT Id
@@ -93,8 +93,8 @@ WHERE (Id = @p1
 
             var where = sqlBuilder
                 .Select()
-                .Where(t => t.Id == 0)
-                .Where(t => t.Name != null)
+                //.Where(t => t.Id == 0)
+                //.Where(t => t.Name != null)
                 .Materialize();
 
             const string expected = @"SELECT Id

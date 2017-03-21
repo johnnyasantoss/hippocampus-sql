@@ -25,20 +25,6 @@ namespace HippocampusSql.Services
             Definitions = new List<ISqlDefinition>();
         }
 
-        static SqlBuilder()
-        {
-            LamdaMethod = typeof(Expression)
-            .GetMethods()
-            .First(m => m.Name == nameof(Expression.Lambda)
-                        && typeof(Expression).IsAssignableFrom(m.ReturnType)
-                        && m.GetParameters()
-                            .Select(p => p.ParameterType)
-                            .SequenceEqual(new[] { typeof(Expression), typeof(ParameterExpression[]) })
-            );
-        }
-
-        protected static readonly MethodInfo LamdaMethod;
-
 
         #region ISqlBuilder implementation
 

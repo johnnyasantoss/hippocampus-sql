@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HippocampusSql.Definitions
 {
-    public class SelectItemDefinition : SqlDefinition, ISelectItem
+    internal class SelectItemDefinition : SqlDefinition, ISelectItem
     {
         public string Expression { get; }
 
