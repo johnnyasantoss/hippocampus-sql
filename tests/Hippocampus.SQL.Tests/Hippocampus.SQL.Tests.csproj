@@ -1,19 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Copyright>Johnny Anderson dos Santos - 2017</Copyright>
     <AssemblyTitle>Hippocampus SQL Tests</AssemblyTitle>
-    
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <AssemblyName>HippocampusSql.Tests</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>HippocampusSql.Tests</RootNamespace>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.TestHost">
+      <Version>1.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.TestPlatform.TestHost">
+      <Version>15.0.0</Version>
+    </PackageReference>
     <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <Version>2.2.0</Version>
+    </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hippocampus.SQL\Hippocampus.SQL.csproj" />
   </ItemGroup>
-
 </Project>

@@ -7,9 +7,9 @@ namespace HippocampusSql.Tests.Utils
     public class ErrorTest
     {
         [Fact]
-        public void CheckArgumentNullShouldThrowWhenNull(object myNullParam)
+        public void CheckArgumentNullShouldThrowWhenNull()
         {
-
+            object myNullParam = null;
             Assert.Throws<ArgumentNullException>(nameof(myNullParam), () => myNullParam.CheckNull(nameof(myNullParam)));
         }
     }
