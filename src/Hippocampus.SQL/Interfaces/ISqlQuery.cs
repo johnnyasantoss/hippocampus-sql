@@ -1,9 +1,9 @@
-﻿using HippocampusSql.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Hippocampus.SQL.Enums;
 
-namespace HippocampusSql.Interfaces
+namespace Hippocampus.SQL.Interfaces
 {
     internal interface ISqlQuery
     {

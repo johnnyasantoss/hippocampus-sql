@@ -1,12 +1,12 @@
-﻿using HippocampusSql.Interfaces;
-using HippocampusSql.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using Hippocampus.SQL.Interfaces;
+using Hippocampus.SQL.Model;
 
-namespace HippocampusSql
+namespace Hippocampus.SQL
 {
     /// <summary>
     /// Stores mapped class info

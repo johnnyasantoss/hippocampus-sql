@@ -1,13 +1,13 @@
-﻿using HippocampusSql.Enums;
-using HippocampusSql.Interfaces;
-using HippocampusSql.Model;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using Hippocampus.SQL.Enums;
+using Hippocampus.SQL.Interfaces;
+using Hippocampus.SQL.Model;
 
-namespace HippocampusSql.Services
+namespace Hippocampus.SQL.Services
 {
     /// <summary>
     /// SQL builder of a class

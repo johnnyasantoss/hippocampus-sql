@@ -1,8 +1,7 @@
-﻿using HippocampusSql.Enums;
-using HippocampusSql.Services;
+﻿using Hippocampus.SQL.Services;
 using Xunit;
 
-namespace HippocampusSql.Tests
+namespace Hippocampus.SQL.UnitTests
 {
     /// <summary>
     /// Tests for <see cref="SqlBuilder{T}"/>

@@ -1,7 +1,7 @@
-﻿using HippocampusSql.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Hippocampus.SQL.Model;
 
-namespace HippocampusSql.Interfaces
+namespace Hippocampus.SQL.Interfaces
 {
     /// <summary>
     /// Class cache

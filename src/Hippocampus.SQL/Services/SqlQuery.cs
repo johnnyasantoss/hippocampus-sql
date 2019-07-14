@@ -1,11 +1,11 @@
-﻿using HippocampusSql.Definitions;
-using HippocampusSql.Enums;
-using HippocampusSql.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Hippocampus.SQL.Definitions;
+using Hippocampus.SQL.Enums;
+using Hippocampus.SQL.Interfaces;
 
-namespace HippocampusSql.Services
+namespace Hippocampus.SQL.Services
 {
     internal class SqlQuery : ISqlQuery
     {

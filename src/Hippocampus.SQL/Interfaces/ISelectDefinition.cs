@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HippocampusSql.Interfaces
+namespace Hippocampus.SQL.Interfaces
 {
     internal interface ISelectDefinition : IDisposable
     {

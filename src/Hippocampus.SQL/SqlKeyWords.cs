@@ -1,4 +1,4 @@
-﻿namespace HippocampusSql
+﻿namespace Hippocampus.SQL
 {
     public class SqlKeyWords
     {

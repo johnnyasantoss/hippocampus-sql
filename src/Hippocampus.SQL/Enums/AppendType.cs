@@ -1,4 +1,4 @@
-﻿namespace HippocampusSql.Enums
+﻿namespace Hippocampus.SQL.Enums
 {
     /// <summary>
     /// Type of append

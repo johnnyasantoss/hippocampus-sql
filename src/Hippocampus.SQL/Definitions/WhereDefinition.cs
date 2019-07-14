@@ -1,7 +1,7 @@
-﻿using HippocampusSql.Enums;
-using HippocampusSql.Interfaces;
+﻿using Hippocampus.SQL.Enums;
+using Hippocampus.SQL.Interfaces;
 
-namespace HippocampusSql.Definitions
+namespace Hippocampus.SQL.Definitions
 {
     internal class WhereDefinition : IWhereDefinition
     {

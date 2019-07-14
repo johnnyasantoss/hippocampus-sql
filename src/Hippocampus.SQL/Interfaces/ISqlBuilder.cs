@@ -1,8 +1,8 @@
-﻿using HippocampusSql.Model;
-using System;
+﻿using System;
 using System.Linq.Expressions;
+using Hippocampus.SQL.Model;
 
-namespace HippocampusSql.Interfaces
+namespace Hippocampus.SQL.Interfaces
 {
     /// <summary>
     /// SQL builder of a class
