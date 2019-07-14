@@ -37,7 +37,7 @@ namespace Hippocampus.SQL.Services
         public string ToSqlString()
         {
             return new StringBuilder(Select.ToString())
-                .Append(Where.ToString())
+                .Append(Where)
                 .ToString()
                 .TrimEnd();
         }

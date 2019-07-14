@@ -16,7 +16,7 @@ namespace Hippocampus.SQL.Services
     public class SqlBuilder<T> : ISqlBuilder<T>
         where T : class
     {
-        private ISqlQuery _query { get; }
+        private ISqlQuery Query { get; }
 
         /// <summary>
         /// Defines if query should have line-breaks
@@ -29,7 +29,7 @@ namespace Hippocampus.SQL.Services
         public SqlBuilder(bool beautify = true)
         {
             Beautify = beautify;
-            _query = new SqlQuery(
+            Query = new SqlQuery(
                 new ClassMetadataCache(typeof(T))
                 , Beautify
                 );
@@ -72,13 +72,13 @@ namespace Hippocampus.SQL.Services
                 else if (constExp.Value is char && ((char)constExp.Value) == '*')
                     paramKey = "*";
                 else
-                    paramKey = _query.GenerateNewParameter(constExp.Value);
+                    paramKey = Query.GenerateNewParameter(constExp.Value);
 
-                _query.AppendInto(appendType, s => s.Append(paramKey));
+                Query.AppendInto(appendType, s => s.Append(paramKey));
             }
             else if (exp is ParameterExpression)
             {
-                _query.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
+                Query.AppendInto(appendType, s => s.Append(((ParameterExpression)exp).Name));
             }
             else if (exp is NewArrayExpression)
             {
@@ -108,24 +108,24 @@ namespace Hippocampus.SQL.Services
             switch (exp.NodeType)
             {
                 case ExpressionType.AndAlso:
-                    _query.AppendInto(appendType,
+                    Query.AppendInto(appendType,
                         s => s.AppendLine()
                               .Append(" AND ")
                         );
                     break;
                 case ExpressionType.OrElse:
-                    _query.AppendInto(appendType,
+                    Query.AppendInto(appendType,
                         s => s.AppendLine()
                               .Append(" OR ")
                         );
                     break;
                 case ExpressionType.Equal:
-                    _query.AppendInto(appendType,
+                    Query.AppendInto(appendType,
                         s => s.Append(" = ")
                         );
                     break;
                 case ExpressionType.NotEqual:
-                    _query.AppendInto(appendType,
+                    Query.AppendInto(appendType,
                         s => s.Append(" <> ")
                         );
                     break;
@@ -138,16 +138,16 @@ namespace Hippocampus.SQL.Services
 
         private void ResolveMemberExpression(MemberExpression exp, AppendType appendType)
         {
-            var cache = _query.ClassCache;
+            var cache = Query.ClassCache;
             if (cache.Columns.Contains(exp.Member.Name))
             {
                 if (!string.IsNullOrWhiteSpace(cache.TableInfo.Abbreviation))
                 {
                     ResolveExpression(exp.Expression, appendType);
-                    _query.AppendInto(appendType, s => s.Append('.'));
+                    Query.AppendInto(appendType, s => s.Append('.'));
                 }
 
-                _query.AppendInto(appendType, s => s.Append(exp.Member.Name));
+                Query.AppendInto(appendType, s => s.Append(exp.Member.Name));
             }
             else
                 throw new InvalidOperationException($"The expression \"{exp}\" to prop that's not a column.");
@@ -163,7 +163,7 @@ namespace Hippocampus.SQL.Services
         /// <returns>This builder</returns>
         public ISqlBuilder<T> Select(Expression<Func<T, object[]>> selector, TableInformation? info = null)
         {
-            using (_query.BeginSelect())
+            using (Query.BeginSelect())
                 ResolveExpression(selector, AppendType.Select);
 
             return this;
@@ -176,7 +176,7 @@ namespace Hippocampus.SQL.Services
         /// <returns>This builder</returns>
         public ISqlBuilder<T> Select(TableInformation? info = null)
         {
-            using (_query.BeginSelect())
+            using (Query.BeginSelect())
             {
                 Expression<Func<char>> exp = () => '*';
                 ResolveExpression(exp, AppendType.Select);
@@ -222,7 +222,7 @@ namespace Hippocampus.SQL.Services
         /// <returns>This builder</returns>
         public ISqlBuilder<T> Where(Expression<Func<T, bool>> predicate)
         {
-            using (_query.BeginWhere())
+            using (Query.BeginWhere())
                 ResolveExpression(predicate, AppendType.Where);
 
             return this;
@@ -232,7 +232,7 @@ namespace Hippocampus.SQL.Services
         /// Generates the sql string made out of this builder
         /// </summary>
         /// <returns>SQL string</returns>
-        public string Materialize() => _query.ToSqlString();
+        public string Materialize() => Query.ToSqlString();
 
         #endregion
 
