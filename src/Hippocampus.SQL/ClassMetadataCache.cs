@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,8 +19,8 @@ namespace Hippocampus.SQL
         /// <param name="type">Type of the mapped class</param>
         public ClassMetadataCache(Type type)
         {
-            var props = type.GetProperties();
-            var table = type.GetCustomAttribute<TableAttribute>();
+            var props = type.GetRuntimeProperties();
+            var table = type.GetTypeInfo().GetCustomAttribute<TableAttribute>();
 
             if (table == null)
                 TableInfo = new TableInformation(type.Name);
