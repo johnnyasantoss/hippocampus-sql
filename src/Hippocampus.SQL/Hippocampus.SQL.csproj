@@ -1,38 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>HippocampusSQL is a package that helps you to create SQL queries.</Description>
     <Copyright>Johnny Santos - 2017</Copyright>
     <AssemblyTitle>HippocampusSQL</AssemblyTitle>
     <VersionPrefix>0.0.1</VersionPrefix>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFramework>netstandard1.5</TargetFramework>
     <DebugType>full</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>hippocampus-sql</AssemblyName>
     <PackageId>hippocampus-sql</PackageId>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTags>sql;sql gen;sql generation;dapper sql gen;dapper sql generation</PackageTags>
     <PackageLicenseUrl>https://github.com/johnnyasantoss/hippocampus-sql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/johnnyasantoss/hippocampus-sql</RepositoryUrl>
-    <PackageTargetFallback>$(PackageTargetFallback);net451</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="tools" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170106-08" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-beta5-build1225" />
-    <PackageReference Include="xunit" Version="2.2.0-beta5-build3474" />
-    <PackageReference Include="System.Runtime" Version="4.1.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
 
 </Project>
