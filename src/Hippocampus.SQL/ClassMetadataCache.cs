@@ -14,7 +14,7 @@ namespace Hippocampus.SQL
     public class ClassMetadataCache : IClassMetadataCache
     {
         /// <summary>
-        /// Creates a chace of a table info
+        /// Creates a cache of a table info
         /// </summary>
         /// <param name="type">Type of the mapped class</param>
         public ClassMetadataCache(Type type)
@@ -51,7 +51,7 @@ namespace Hippocampus.SQL
         public List<string> Keys { get; } = new List<string>();
 
         /// <summary>
-        /// Table informations
+        /// Table information
         /// </summary>
         public TableInformation TableInfo { get; }
 
